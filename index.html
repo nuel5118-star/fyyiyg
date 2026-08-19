@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{business_name}} — A quick word</title>
+<title id="pageTitle">A quick word</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -194,15 +194,15 @@
 
   <div class="wrap">
 
-    <div class="eyebrow">Prepared for {{business_name}}</div>
-    <h1>A quick word for <span class="biz-name">{{business_name}}</span></h1>
+    <div class="eyebrow">Prepared for <span id="bizNameEyebrow">you</span></div>
+    <h1>A quick word for <span class="biz-name" id="bizNameHeadline">you</span></h1>
     <p class="subhead">Instead of another email you'll never read — a two minute video on what we built for a company just like yours.</p>
 
     <div class="video-block">
       <video id="mainVideo" controls playsinline>
-        <source src="{{video_url}}" type="video/mp4">
+        <source id="mainVideoSource" src="" type="video/mp4">
       </video>
-      <div id="screenshotOverlay" class="screenshot-overlay" style="background-image:url('{{screenshot_url}}');"></div>
+      <div id="screenshotOverlay" class="screenshot-overlay"></div>
     </div>
 
     <p class="recap"><strong>Most companies in your line of work</strong> send out quotes that just go quiet. No response. Those aren't dead leads. We follow up on them and turn them into real booked jobs.</p>
@@ -238,21 +238,76 @@
     </div>
 
     <div class="cta-block">
-      <a href="{{booking_url}}" class="cta-btn">Book a 15-minute call →</a>
-      <div class="cta-sub">Or just <a href="mailto:{{assigned_inbox}}?subject=Re: {{original_subject}}">reply to the email</a> and we'll set up a time.</div>
+      <a href="#" id="bookingLink" class="cta-btn">Book a 15-minute call →</a>
+      <div class="cta-sub">Or just <a href="#" id="replyLink">reply to the email</a> and we'll set up a time.</div>
     </div>
 
   </div>
 
 <script>
-  const CONTACT_ID = "{{contact_id}}";
-  const CAMPAIGN_ID = "{{campaign_id}}";
+  // ── Backend API base ─────────────────────────────────────────
+  // This page is hosted on the custom domain, separate from the Railway
+  // backend/Supabase, so it can't be server-templated anymore — it pulls
+  // this contact's data from Railway over the network instead, on load.
+  // UPDATE this if the Railway URL ever changes.
+  const API_BASE = "https://gfcjvjckxz-production.up.railway.app";
 
   // ── Screenshot overlay, synced to video playback time ──────────
-  // Windows are injected server-side from the settings/defaults —
-  // update DEFAULT_SCREENSHOT_WINDOWS in server.js once the real
-  // blank-spot timestamps are known from the finished videos.
-  const SCREENSHOT_WINDOWS = JSON.parse('{{screenshot_windows}}');
+  // Fallback windows in case the API doesn't return any — update
+  // DEFAULT_SCREENSHOT_WINDOWS in server.js once the real blank-spot
+  // timestamps are known from the finished videos.
+  let SCREENSHOT_WINDOWS = [{ start: 0, end: 4 }, { start: 38, end: 45 }];
+  let CONTACT_ID = '';
+  let CAMPAIGN_ID = '';
+
+  // ── Get the lead's slug out of the URL ──────────────────────────
+  // Works whichever way the custom domain is set up to route here:
+  //   https://yourdomain.com/w/ax7g2k   (clean path — needs a host rewrite rule)
+  //   https://yourdomain.com/?lead=ax7g2k  (query param — works on any static host, zero config)
+  function getSlug() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('lead')) return params.get('lead');
+    const parts = window.location.pathname.split('/').filter(Boolean);
+    return parts.length ? parts[parts.length - 1] : '';
+  }
+
+  async function loadLead() {
+    const slug = getSlug();
+    if (!slug) {
+      document.body.innerHTML = '<div style="padding:60px 24px;text-align:center;color:#8C8C8C;font-family:Inter,sans-serif;">This link is missing its ID.</div>';
+      return;
+    }
+
+    let data;
+    try {
+      const res = await fetch(`${API_BASE}/api/lead/${encodeURIComponent(slug)}`);
+      if (!res.ok) throw new Error('not found');
+      data = await res.json();
+    } catch (e) {
+      document.body.innerHTML = '<div style="padding:60px 24px;text-align:center;color:#8C8C8C;font-family:Inter,sans-serif;">This link is no longer active.</div>';
+      return;
+    }
+
+    document.getElementById('pageTitle').textContent = `${data.business_name} — A quick word`;
+    document.getElementById('bizNameEyebrow').textContent = data.business_name;
+    document.getElementById('bizNameHeadline').textContent = data.business_name;
+    document.getElementById('mainVideoSource').src = data.video_url || '';
+    document.getElementById('screenshotOverlay').style.backgroundImage = data.screenshot_url ? `url('${data.screenshot_url}')` : '';
+    document.getElementById('mainVideo').load();
+
+    const bookingLink = document.getElementById('bookingLink');
+    bookingLink.href = data.booking_url || '#';
+
+    const replyLink = document.getElementById('replyLink');
+    const subject = encodeURIComponent(data.original_subject || 'our conversation');
+    replyLink.href = data.assigned_inbox ? `mailto:${data.assigned_inbox}?subject=Re: ${subject}` : '#';
+
+    if (Array.isArray(data.screenshot_windows) && data.screenshot_windows.length) {
+      SCREENSHOT_WINDOWS = data.screenshot_windows;
+    }
+    CONTACT_ID = data.contact_id || '';
+    CAMPAIGN_ID = data.campaign_id || '';
+  }
 
   const video = document.getElementById('mainVideo');
   const overlay = document.getElementById('screenshotOverlay');
@@ -289,7 +344,7 @@
   async function submitCalc(quotes, jobValue, total, low, high) {
     if (!CONTACT_ID) return;
     try {
-      await fetch('/api/calc-submit', {
+      await fetch(`${API_BASE}/api/calc-submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -300,6 +355,7 @@
     } catch (e) { console.error('Could not save calculator submission', e); }
   }
 
+  loadLead();
   calc();
 </script>
 
