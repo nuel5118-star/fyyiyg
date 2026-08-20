@@ -318,6 +318,30 @@
     overlay.classList.toggle('visible', inWindow);
   });
 
+  // ── Video watch tracking ────────────────────────────────────────
+  // "play" fires once, the first time they actually press play (not on
+  // page load — autoplay isn't used here). "ended" fires once if they
+  // watch it all the way through. Both feed the same branch-trigger
+  // system as link clicks and the calculator, for intent tracks.
+  let videoPlayTracked = false;
+  video.addEventListener('play', () => {
+    if (videoPlayTracked || !CONTACT_ID) return;
+    videoPlayTracked = true;
+    fetch(`${API_BASE}/api/track/video`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contact_id: CONTACT_ID, campaign_id: CAMPAIGN_ID, event: 'play' })
+    }).catch(() => {});
+  });
+  video.addEventListener('ended', () => {
+    if (!CONTACT_ID) return;
+    fetch(`${API_BASE}/api/track/video`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contact_id: CONTACT_ID, campaign_id: CAMPAIGN_ID, event: 'complete' })
+    }).catch(() => {});
+  });
+
   // ── Calculator ───────────────────────────────────────────────
   function step(id, dir) {
     const el = document.getElementById(id);
