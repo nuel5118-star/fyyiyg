@@ -81,33 +81,58 @@
     margin-bottom: 40px;
   }
 
-  /* ── Video block with synced screenshot overlay ─────────────── */
+  /* ── Video block: website screenshot as the persistent background,  ── */
+  /* ── presenter video as a small circular bubble in the corner       ── */
   .video-block {
     position: relative;
     width: 100%;
     aspect-ratio: 16/9;
-    background: var(--panel);
+    background: var(--panel) center/cover no-repeat;
     border: 1px solid var(--border);
     border-radius: 16px;
     overflow: hidden;
     margin-bottom: 48px;
   }
-  .video-block video {
-    width: 100%;
-    height: 100%;
+  .face-bubble {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 22%;
+    aspect-ratio: 1/1;
+    min-width: 90px;
+    max-width: 180px;
+    border-radius: 50%;
     object-fit: cover;
     display: block;
+    border: 3px solid rgba(255,255,255,0.85);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+    cursor: pointer;
+    background: #111;
   }
-  .screenshot-overlay {
+  .play-hint {
     position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: top center;
-    opacity: 0;
+    bottom: 20px;
+    right: 20px;
+    width: 22%;
+    aspect-ratio: 1/1;
+    min-width: 90px;
+    max-width: 180px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     pointer-events: none;
-    transition: opacity 0.4s ease;
+    background: rgba(0,0,0,0.25);
   }
-  .screenshot-overlay.visible { opacity: 1; }
+  .play-hint::after {
+    content: '';
+    width: 0; height: 0;
+    border-top: 12px solid transparent;
+    border-bottom: 12px solid transparent;
+    border-left: 18px solid rgba(255,255,255,0.95);
+    margin-left: 4px;
+  }
+  .play-hint.hidden { display: none; }
 
   .recap {
     font-size: 15px;
@@ -198,11 +223,11 @@
     <h1>A quick word for <span class="biz-name" id="bizNameHeadline">you</span></h1>
     <p class="subhead">Instead of another email you'll never read — a two minute video on what we built for a company just like yours.</p>
 
-    <div class="video-block">
-      <video id="mainVideo" controls playsinline>
+    <div class="video-block" id="videoBlock">
+      <video id="mainVideo" class="face-bubble" playsinline preload="auto">
         <source id="mainVideoSource" src="" type="video/mp4">
       </video>
-      <div id="screenshotOverlay" class="screenshot-overlay"></div>
+      <div id="playHint" class="play-hint"></div>
     </div>
 
     <p class="recap"><strong>Most companies in your line of work</strong> send out quotes that just go quiet. No response. Those aren't dead leads. We follow up on them and turn them into real booked jobs.</p>
@@ -252,11 +277,6 @@
   // UPDATE this if the Railway URL ever changes.
   const API_BASE = "https://gfcjvjckxz.onrender.com";
 
-  // ── Screenshot overlay, synced to video playback time ──────────
-  // Fallback windows in case the API doesn't return any — update
-  // DEFAULT_SCREENSHOT_WINDOWS in server.js once the real blank-spot
-  // timestamps are known from the finished videos.
-  let SCREENSHOT_WINDOWS = [{ start: 0, end: 4 }, { start: 38, end: 45 }];
   let CONTACT_ID = '';
   let CAMPAIGN_ID = '';
 
@@ -292,7 +312,7 @@
     document.getElementById('bizNameEyebrow').textContent = data.business_name;
     document.getElementById('bizNameHeadline').textContent = data.business_name;
     document.getElementById('mainVideoSource').src = data.video_url || '';
-    document.getElementById('screenshotOverlay').style.backgroundImage = data.screenshot_url ? `url('${data.screenshot_url}')` : '';
+    document.getElementById('videoBlock').style.backgroundImage = data.screenshot_url ? `url('${data.screenshot_url}')` : '';
     document.getElementById('mainVideo').load();
 
     const bookingLink = document.getElementById('bookingLink');
@@ -302,21 +322,21 @@
     const subject = encodeURIComponent(data.original_subject || 'our conversation');
     replyLink.href = data.assigned_inbox ? `mailto:${data.assigned_inbox}?subject=Re: ${subject}` : '#';
 
-    if (Array.isArray(data.screenshot_windows) && data.screenshot_windows.length) {
-      SCREENSHOT_WINDOWS = data.screenshot_windows;
-    }
     CONTACT_ID = data.contact_id || '';
     CAMPAIGN_ID = data.campaign_id || '';
   }
 
   const video = document.getElementById('mainVideo');
-  const overlay = document.getElementById('screenshotOverlay');
+  const playHint = document.getElementById('playHint');
 
-  video.addEventListener('timeupdate', () => {
-    const t = video.currentTime;
-    const inWindow = SCREENSHOT_WINDOWS.some(w => t >= w.start && t <= w.end);
-    overlay.classList.toggle('visible', inWindow);
+  // Face bubble is click-to-play/pause (no native controls — they don't
+  // fit a small circle). Play-triangle hint shows while paused, hides
+  // once playing.
+  video.addEventListener('click', () => {
+    if (video.paused) video.play(); else video.pause();
   });
+  video.addEventListener('play', () => playHint.classList.add('hidden'));
+  video.addEventListener('pause', () => playHint.classList.remove('hidden'));
 
   // ── Video watch tracking ────────────────────────────────────────
   // "play" fires once, the first time they actually press play (not on
