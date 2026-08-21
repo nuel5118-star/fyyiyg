@@ -149,7 +149,26 @@
     border-radius: 0;
     border: none;
     box-shadow: none;
+    object-fit: contain;
+    background: #000;
   }
+
+  /* ── Loading spinner — shown until the video can actually play,     ── */
+  /* ── and again any time playback stalls waiting on the network      ── */
+  .loading-spinner {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 40px; height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 3px solid rgba(255,255,255,0.25);
+    border-top-color: rgba(255,255,255,0.9);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    z-index: 4;
+    pointer-events: none;
+  }
+  .loading-spinner.hidden { display: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   .recap {
     font-size: 15px;
@@ -245,6 +264,7 @@
         <source id="mainVideoSource" src="" type="video/mp4">
       </video>
       <div id="playHint" class="play-hint"></div>
+      <div id="loadingSpinner" class="loading-spinner"></div>
     </div>
 
     <p class="recap"><strong>Most companies in your line of work</strong> send out quotes that just go quiet. No response. Those aren't dead leads. We follow up on them and turn them into real booked jobs.</p>
@@ -416,6 +436,13 @@
   video.addEventListener('error', () => {
     document.body.innerHTML = '<div style="padding:60px 24px;text-align:center;color:#8C8C8C;font-family:Inter,sans-serif;">The video could not be loaded. Please check the video URL.</div>';
   });
+
+  // Spinner covers both the initial load (visible by default until the
+  // first frame is ready to play) and any mid-playback network stall.
+  const spinner = document.getElementById('loadingSpinner');
+  video.addEventListener('waiting', () => spinner.classList.remove('hidden'));
+  video.addEventListener('canplay', () => spinner.classList.add('hidden'));
+  video.addEventListener('playing', () => spinner.classList.add('hidden'));
 
   // ── Video watch tracking ────────────────────────────────────────
   // "play" fires once, the first time they actually press play (not on
