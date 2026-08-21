@@ -108,6 +108,7 @@
     box-shadow: 0 6px 24px rgba(0,0,0,0.4);
     cursor: pointer;
     background: #111;
+    transition: all 0.5s ease;
   }
   .play-hint {
     position: absolute;
@@ -133,6 +134,22 @@
     margin-left: 4px;
   }
   .play-hint.hidden { display: none; }
+
+  /* ── Stage 4: presenter goes full-screen, no more image overlay ──── */
+  .face-bubble.expanded {
+    bottom: 0; right: 0; top: 0; left: 0;
+    width: 100%; height: 100%;
+    min-width: 0; max-width: none;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+  .play-hint.expanded {
+    bottom: 0; right: 0; top: 0; left: 0;
+    width: 100%; height: 100%;
+    min-width: 0; max-width: none;
+    border-radius: 0;
+  }
 
   .recap {
     font-size: 15px;
@@ -280,6 +297,14 @@
   let CONTACT_ID = '';
   let CAMPAIGN_ID = '';
 
+  // ── Video stage timeline ─────────────────────────────────────────
+  // Stage 1 (0 → stage1_end): personalized website screenshot behind the bubble
+  // Stage 2 (stage1_end → stage2_end): shared "how it works" image
+  // Stage 3 (stage2_end → stage3_end): shared "system" image
+  // Stage 4 (stage3_end → end): no image — presenter fills the whole frame
+  let STAGE_IMAGES = { screenshot: '', how_it_works: '', system: '' };
+  let STAGE_ENDS = { stage1: 0, stage2: 0, stage3: 0 };
+
   // ── Get the lead's slug out of the URL ──────────────────────────
   // Works whichever way the custom domain is set up to route here:
   //   https://yourdomain.com/w/ax7g2k   (clean path — needs a host rewrite rule)
@@ -312,8 +337,20 @@
     document.getElementById('bizNameEyebrow').textContent = data.business_name;
     document.getElementById('bizNameHeadline').textContent = data.business_name;
     document.getElementById('mainVideoSource').src = data.video_url || '';
-    document.getElementById('videoBlock').style.backgroundImage = data.screenshot_url ? `url('${data.screenshot_url}')` : '';
     document.getElementById('mainVideo').load();
+
+    STAGE_IMAGES = {
+      screenshot: data.screenshot_url || '',
+      how_it_works: data.how_it_works_url || '',
+      system: data.system_url || ''
+    };
+    STAGE_ENDS = {
+      stage1: Number(data.video_stage1_end) || 0,
+      stage2: Number(data.video_stage2_end) || 0,
+      stage3: Number(data.video_stage3_end) || 0
+    };
+    // Show stage 1's image immediately so the page isn't blank before play.
+    setStageImage(STAGE_IMAGES.screenshot);
 
     const bookingLink = document.getElementById('bookingLink');
     bookingLink.href = data.booking_url || '#';
@@ -328,6 +365,38 @@
 
   const video = document.getElementById('mainVideo');
   const playHint = document.getElementById('playHint');
+  const videoBlock = document.getElementById('videoBlock');
+
+  function setStageImage(url) {
+    videoBlock.style.backgroundImage = url ? `url('${url}')` : '';
+  }
+
+  let isExpanded = false;
+  function setExpanded(expanded) {
+    if (expanded === isExpanded) return;
+    isExpanded = expanded;
+    video.classList.toggle('expanded', expanded);
+    playHint.classList.toggle('expanded', expanded);
+  }
+
+  // Drives the whole overlay sequence off actual playback time, so it
+  // stays in sync no matter where the viewer scrubs to.
+  video.addEventListener('timeupdate', () => {
+    const t = video.currentTime;
+    if (t < STAGE_ENDS.stage1) {
+      setExpanded(false);
+      setStageImage(STAGE_IMAGES.screenshot);
+    } else if (t < STAGE_ENDS.stage2) {
+      setExpanded(false);
+      setStageImage(STAGE_IMAGES.how_it_works);
+    } else if (t < STAGE_ENDS.stage3) {
+      setExpanded(false);
+      setStageImage(STAGE_IMAGES.system);
+    } else {
+      setStageImage('');
+      setExpanded(true);
+    }
+  });
 
   // Face bubble is click-to-play/pause (no native controls — they don't
   // fit a small circle). Play-triangle hint shows while paused, hides
