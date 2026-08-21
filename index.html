@@ -15,10 +15,13 @@
     --accent-bright: #FFFFFF;
     --cream: #F2F2F2;
     --cream-dim: #8C8C8C;
+    --cream-dimmer: #5E5E5E;
     --border: #2A2A2A;
+    --border-soft: #232323;
     --texture: #FFFFFF;
     --texture-opacity: 0.14;
     --num-font: 'Space Grotesk', sans-serif;
+    --highlight-bg: rgba(255,255,255,0.10);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -91,7 +94,7 @@
     border: 1px solid var(--border);
     border-radius: 16px;
     overflow: hidden;
-    margin-bottom: 48px;
+    margin-bottom: 20px;
     cursor: pointer;
   }
   .face-bubble {
@@ -111,9 +114,6 @@
     background: #111;
     transition: all 0.5s ease;
   }
-  /* Big centered play button — independent of where the face bubble sits,
-     so it's obvious even when the bubble is tucked in a corner. Pure CSS:
-     ::before draws the dark circle, ::after draws the triangle on top. */
   .play-hint {
     position: absolute;
     inset: 0;
@@ -141,7 +141,6 @@
   }
   .play-hint.hidden { display: none; }
 
-  /* ── Stage 4: presenter goes full-screen, no more image overlay ──── */
   .face-bubble.expanded {
     bottom: 0; right: 0; top: 0; left: 0;
     width: 100%; height: 100%;
@@ -153,8 +152,6 @@
     background: #000;
   }
 
-  /* ── Loading spinner — shown until the video can actually play,     ── */
-  /* ── and again any time playback stalls waiting on the network      ── */
   .loading-spinner {
     position: absolute;
     top: 50%; left: 50%;
@@ -170,6 +167,21 @@
   .loading-spinner.hidden { display: none; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  .video-caption {
+    font-size: 13px;
+    color: var(--cream-dimmer);
+    text-align: center;
+    margin-bottom: 56px;
+  }
+
+  /* ── Shared section scaffolding ─────────────────────────────────── */
+  section { margin-bottom: 64px; }
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
   .recap {
     font-size: 15px;
     line-height: 1.7;
@@ -180,7 +192,84 @@
   }
   .recap strong { color: var(--cream); font-weight: 600; }
 
-  .ledger-section { margin-bottom: 64px; text-align: center; }
+  /* ── Quiet-leak narrative block ──────────────────────────────────── */
+  .leak-eyebrow { color: var(--cream-dim); }
+  .leak-eyebrow::before { background: var(--cream-dim); }
+  h2.leak-headline {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(28px, 6vw, 40px);
+    line-height: 1.14;
+    letter-spacing: -0.01em;
+    margin-bottom: 22px;
+  }
+  h2.leak-headline em { color: var(--cream-dim); font-style: italic; font-weight: 500; }
+  .leak-body {
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--cream-dim);
+    margin-bottom: 14px;
+  }
+  .leak-body mark {
+    background: var(--highlight-bg);
+    color: var(--cream);
+    font-weight: 600;
+    padding: 0 4px;
+    border-radius: 3px;
+  }
+
+  .leak-gauge {
+    margin-top: 32px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 28px;
+  }
+  .leak-gauge-label {
+    font-family: var(--num-font);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cream-dim);
+    margin-bottom: 10px;
+  }
+  .leak-gauge-value {
+    font-family: var(--num-font);
+    font-size: clamp(34px, 8vw, 48px);
+    font-weight: 600;
+    color: var(--accent-bright);
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .leak-gauge-caption { font-size: 13px; color: var(--cream-dimmer); line-height: 1.6; }
+  .leak-gauge-caption a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--border); }
+
+  /* ── Reassurance / "your system already did the work" ────────────── */
+  .reassure-title {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    max-width: 460px;
+  }
+  .reassure-body { font-size: 15px; line-height: 1.7; color: var(--cream-dim); margin-bottom: 26px; max-width: 480px; }
+  .check-list { display: flex; flex-direction: column; gap: 14px; }
+  .check-item { display: flex; gap: 12px; align-items: flex-start; }
+  .check-icon {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    border-radius: 5px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 2px;
+  }
+  .check-icon::after { content: '✓'; font-size: 11px; color: var(--accent-bright); }
+  .check-text { font-size: 14.5px; line-height: 1.6; color: var(--cream-dim); }
+  .check-text strong { color: var(--cream); font-weight: 600; }
+
+  /* ── Calculator ───────────────────────────────────────────────── */
+  .ledger-section { text-align: center; }
   .ledger-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600; margin-bottom: 6px; }
   .ledger-sub { font-size: 14px; color: var(--cream-dim); margin-bottom: 32px; }
 
@@ -236,7 +325,104 @@
     .stepper input { text-align: left; }
   }
 
+  /* ── How it works / steps ─────────────────────────────────────── */
+  .steps-eyebrow { color: var(--cream-dim); }
+  .steps-eyebrow::before { background: var(--cream-dim); }
+  .step-block {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 30px 28px;
+    margin-bottom: 16px;
+  }
+  .step-tag {
+    font-family: var(--num-font);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cream-dimmer);
+    margin-bottom: 10px;
+  }
+  .step-title { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; margin-bottom: 10px; }
+  .step-body { font-size: 14.5px; line-height: 1.7; color: var(--cream-dim); }
+  .step-body strong { color: var(--cream); font-weight: 600; }
+
+  .chat-mock {
+    margin-top: 18px;
+    background: var(--bg);
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .chat-bubble {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--cream);
+    font-size: 13.5px;
+    line-height: 1.55;
+    padding: 12px 15px;
+    border-radius: 14px 14px 3px 14px;
+    max-width: 88%;
+  }
+
+  /* ── FAQ accordion ────────────────────────────────────────────── */
+  .faq-eyebrow { color: var(--cream-dim); }
+  .faq-eyebrow::before { background: var(--cream-dim); }
+  .faq-item {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .faq-q {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 20px 22px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--cream);
+  }
+  .faq-plus {
+    flex-shrink: 0;
+    width: 22px; height: 22px;
+    position: relative;
+  }
+  .faq-plus::before, .faq-plus::after {
+    content: '';
+    position: absolute;
+    background: var(--accent);
+    transition: transform 0.25s ease;
+  }
+  .faq-plus::before { top: 50%; left: 0; width: 100%; height: 1.5px; margin-top: -0.75px; }
+  .faq-plus::after { left: 50%; top: 0; height: 100%; width: 1.5px; margin-left: -0.75px; }
+  .faq-item.open .faq-plus::after { transform: rotate(90deg); opacity: 0; }
+  .faq-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .faq-a-inner {
+    padding: 0 22px 20px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--cream-dim);
+  }
+
+  /* ── CTA ─────────────────────────────────────────────────────── */
   .cta-block { text-align: center; }
+  .cta-block .ledger-title { margin-bottom: 10px; }
+  .cta-block .ledger-sub { margin-bottom: 30px; }
   .cta-btn {
     display: inline-flex; align-items: center; gap: 10px;
     background: var(--accent-bright); color: var(--bg);
@@ -248,6 +434,14 @@
   .cta-sub { margin-top: 16px; font-size: 13px; color: var(--cream-dim); }
   .cta-sub a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent); }
 
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--cream-dimmer);
+    padding-top: 20px;
+    border-top: 1px solid var(--border-soft);
+  }
+
   @media (max-width: 520px) { .wrap { padding: 60px 18px 80px; } }
 </style>
 </head>
@@ -257,7 +451,7 @@
 
     <div class="eyebrow">Prepared for <span id="bizNameEyebrow">you</span></div>
     <h1>A quick word for <span class="biz-name" id="bizNameHeadline">you</span></h1>
-    <p class="subhead">Instead of another email you'll never read — a two minute video on what we built for a company just like yours.</p>
+    <p class="subhead" id="subheadText">Instead of another email you'll never read — a two minute video on what we built for a company just like yours.</p>
 
     <div class="video-block" id="videoBlock">
       <video id="mainVideo" class="face-bubble" playsinline preload="auto">
@@ -266,16 +460,42 @@
       <div id="playHint" class="play-hint"></div>
       <div id="loadingSpinner" class="loading-spinner"></div>
     </div>
+    <p class="video-caption">Tap the video to play — two minutes, no sound required.</p>
 
-    <p class="recap"><strong>Most companies in your line of work</strong> send out quotes that just go quiet. No response. Those aren't dead leads. We follow up on them and turn them into real booked jobs.</p>
+    <p class="recap" id="recapText"><strong>Most companies in your line of work</strong> send out quotes that just go quiet. No response. Those aren't dead leads. We follow up on them and turn them into real booked jobs.</p>
 
-    <div class="ledger-section">
+    <!-- ── Quiet leak narrative ─────────────────────────────────── -->
+    <section class="reveal">
+      <div class="eyebrow leak-eyebrow">The quiet leak</div>
+      <h2 class="leak-headline">You're not losing customers.<br><em>You're losing follow-up.</em></h2>
+      <p class="leak-body" id="leakBody1">You're busy. Every job still gets done right — because that's the kind of company you run — and the customer looks at the extra work and says <mark>"maybe next time."</mark></p>
+      <p class="leak-body" id="leakBody2">And that's usually the last anyone hears of it. The job gets logged. The system files it in a report nobody opens. The customer forgets. The work stays undone.</p>
+      <div class="leak-gauge">
+        <div class="leak-gauge-label" id="gaugeLabel">Estimated unclaimed work sitting in your pipeline</div>
+        <div class="leak-gauge-value" id="gaugeValue">$5,000 – $10,000</div>
+        <div class="leak-gauge-caption" id="gaugeCaption">Based on a starting estimate of 20 unanswered quotes at $500 each — <a href="#calc">adjust it to your real numbers below</a>.</div>
+      </div>
+    </section>
+
+    <!-- ── Reassurance ──────────────────────────────────────────── -->
+    <section class="reveal">
+      <h2 class="reassure-title" id="reassureTitle">Your job history already did the hard part.</h2>
+      <p class="reassure-body" id="reassureBody">You earned these customers. You did the work, wrote the quote, made the call. All that's missing is the follow-up — and that part becomes our job.</p>
+      <div class="check-list">
+        <div class="check-item"><span class="check-icon"></span><span class="check-text" id="check1"><strong>No discounts on your labor</strong> — ever. A well-timed follow-up does the work.</span></div>
+        <div class="check-item"><span class="check-icon"></span><span class="check-text" id="check2">Customers can reply, book, or opt out. <strong>Your team changes nothing.</strong></span></div>
+        <div class="check-item"><span class="check-icon"></span><span class="check-text">Every booked job gets <strong>attributed to the message</strong> that recovered it.</span></div>
+      </div>
+    </section>
+
+    <!-- ── Calculator ───────────────────────────────────────────── -->
+    <section class="ledger-section reveal" id="calc">
       <div class="ledger-title">Check your own number</div>
-      <div class="ledger-sub">Enter what's actually sitting in your job board right now.</div>
+      <div class="ledger-sub" id="ledgerSub">Enter what's actually sitting in your pipeline right now.</div>
 
       <div class="calc-box">
         <div class="flow-stat">
-          <div class="flow-stat-label">Unanswered quotes sitting in your pipeline</div>
+          <div class="flow-stat-label" id="calcLabel1">Unanswered quotes sitting in your pipeline</div>
           <div class="stepper">
             <button onclick="step('quotes', -1)">−</button>
             <input type="number" id="quotes" value="20" oninput="calc()">
@@ -297,12 +517,69 @@
           <div class="flow-result-caption">Out of <span id="totalValue">$10,000</span> in total unanswered quotes — money tied to leads you've already paid to generate, not new ad spend.</div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <div class="cta-block">
+    <!-- ── How it works ─────────────────────────────────────────── -->
+    <section class="reveal">
+      <div class="eyebrow steps-eyebrow">How it works</div>
+      <h2 class="leak-headline" style="font-size:clamp(24px,5vw,32px); margin-bottom:24px;">Live in about a week. Nothing changes at the counter.</h2>
+
+      <div class="step-block">
+        <div class="step-tag">Step one</div>
+        <div class="step-title">Plug into what you already use</div>
+        <div class="step-body" id="stepOneBody">Works with what you already run — <strong>no rip-and-replace, no new logins for your team.</strong> A simple weekly export works too. Setup takes about an hour of your time, once.</div>
+      </div>
+
+      <div class="step-block">
+        <div class="step-tag">Step two</div>
+        <div class="step-title">We write and send the follow-up</div>
+        <div class="step-body" id="stepTwoBody">A message goes out for every declined job, lapsed customer, and overdue service — <strong>from your business name, in your voice.</strong> You approve the playbook once at kickoff.</div>
+        <div class="chat-mock">
+          <div class="chat-bubble" id="chatBubbleSample">Hi Mike, it's John — back in March we quoted the work and you asked us to hold off. Totally get it. Want us to take another look this week? No charge to check.</div>
+        </div>
+      </div>
+
+      <div class="step-block">
+        <div class="step-tag">Step three</div>
+        <div class="step-title">Every recovered dollar gets counted</div>
+        <div class="step-body">Every booked job lands on one dashboard with a running total. Not a vague "engagement" score — a dollar figure, tied to the exact message that brought it back.</div>
+      </div>
+    </section>
+
+    <!-- ── FAQ ──────────────────────────────────────────────────── -->
+    <section class="reveal">
+      <div class="eyebrow faq-eyebrow">Fair questions</div>
+      <h2 class="leak-headline" style="font-size:clamp(24px,5vw,32px); margin-bottom:24px;">What every owner asks us.</h2>
+
+      <div id="faqList">
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)"><span>Is this going to annoy my customers?</span><span class="faq-plus"></span></button>
+          <div class="faq-a"><div class="faq-a-inner" id="faqA1">No. Every message references that specific customer's real job and history, reads like a person wrote it, and gives a clear, one-tap way to opt out. We're not blasting a list — we're following up the way your best person would if they had unlimited time in the day.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)"><span>We already have a CRM or scheduling tool. Isn't this the same thing?</span><span class="faq-plus"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">Most of those tools store the data. They don't write the follow-up message and send it on a schedule tied to what actually happened on that job. We sit on top of what you already have — we don't replace it.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)"><span id="faqQ3">How much of my team's time does this take?</span><span class="faq-plus"></span></button>
+          <div class="faq-a"><div class="faq-a-inner" id="faqA3">About an hour, once, at setup. After that, messages go out on their own and replies land wherever you already handle them. Nobody has to learn a new system.</div></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" onclick="toggleFaq(this)"><span>What does setup actually look like?</span><span class="faq-plus"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">A short call to connect your system (or set up a weekly export), one round of approving the message playbook in your voice, and you're live. Most shops are running within a week.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ──────────────────────────────────────────────────── -->
+    <div class="cta-block reveal">
+      <div class="ledger-title">See what's sitting in yours</div>
+      <div class="ledger-sub">15-minute call. We'll show you your actual numbers — no pitch if they're not there.</div>
       <a href="#" id="bookingLink" class="cta-btn">Book a 15-minute call →</a>
       <div class="cta-sub">Or just <a href="#" id="replyLink">reply to the email</a> and we'll set up a time.</div>
     </div>
+
+    <footer id="footerNote">Every number on this page is either from your own inputs or a plainly-labeled estimate — nothing here is dressed up as someone else's result.</footer>
 
   </div>
 
@@ -325,10 +602,107 @@
   let STAGE_IMAGES = { screenshot: '', how_it_works: '', system: '' };
   let STAGE_ENDS = { stage1: 0, stage2: 0, stage3: 0 };
 
+  // ── Industry copy system ─────────────────────────────────────────
+  // Keyed by a slug this page expects on the lead record as `data.industry`.
+  // NOTE: the current backend response (see loadLead below) doesn't send this
+  // field yet — this reads data.industry if present and falls back to
+  // 'general' otherwise. Adding the field on the backend is a separate change
+  // to discuss, not something this file does on its own.
+  const INDUSTRY_COPY = {
+    auto: {
+      label: 'auto repair', jobNoun: 'quotes', jobNounSingular: 'quote',
+      systemNoun: 'shop system', stallPhrase: '"maybe next time."',
+      teamNoun: 'advisors', bookedNoun: 'jobs',
+      sampleName: 'Mike', sampleMonth: 'March', sampleService: 'the rear brake service'
+    },
+    tree: {
+      label: 'tree service', jobNoun: 'estimates', jobNounSingular: 'estimate',
+      systemNoun: 'job board', stallPhrase: '"call us in the fall."',
+      teamNoun: 'crews', bookedNoun: 'jobs',
+      sampleName: 'Dana', sampleMonth: 'June', sampleService: 'the dead oak removal'
+    },
+    irrigation: {
+      label: 'irrigation & sprinkler', jobNoun: 'estimates', jobNounSingular: 'estimate',
+      systemNoun: 'job board', stallPhrase: '"we\u2019ll wait till spring."',
+      teamNoun: 'techs', bookedNoun: 'jobs',
+      sampleName: 'Carla', sampleMonth: 'April', sampleService: 'the backflow repair'
+    },
+    lawn: {
+      label: 'lawn & landscaping', jobNoun: 'proposals', jobNounSingular: 'proposal',
+      systemNoun: 'job board', stallPhrase: '"let us think on it."',
+      teamNoun: 'crews', bookedNoun: 'jobs',
+      sampleName: 'Reggie', sampleMonth: 'September', sampleService: 'the fall cleanup'
+    },
+    hvac: {
+      label: 'HVAC', jobNoun: 'quotes', jobNounSingular: 'quote',
+      systemNoun: 'dispatch board', stallPhrase: '"we\u2019ll ride it out this season."',
+      teamNoun: 'techs', bookedNoun: 'jobs',
+      sampleName: 'Priya', sampleMonth: 'July', sampleService: 'the capacitor replacement'
+    },
+    roofing: {
+      label: 'roofing', jobNoun: 'estimates', jobNounSingular: 'estimate',
+      systemNoun: 'job board', stallPhrase: '"we\u2019ll deal with it later."',
+      teamNoun: 'crews', bookedNoun: 'jobs',
+      sampleName: 'Tom', sampleMonth: 'May', sampleService: 'the flashing repair'
+    },
+    general: {
+      label: 'service', jobNoun: 'quotes', jobNounSingular: 'quote',
+      systemNoun: 'job board', stallPhrase: '"maybe next time."',
+      teamNoun: 'team', bookedNoun: 'jobs',
+      sampleName: 'Alex', sampleMonth: 'last month', sampleService: 'the recommended work'
+    }
+  };
+
+  function applyIndustryCopy(industrySlug, bizName) {
+    const c = INDUSTRY_COPY[industrySlug] || INDUSTRY_COPY.general;
+
+    document.getElementById('subheadText').textContent =
+      `Instead of another email you'll never read — a two minute video on what we built for a ${c.label} company just like yours.`;
+
+    document.getElementById('recapText').innerHTML =
+      `<strong>Most ${c.label} companies</strong> send out ${c.jobNoun} that just go quiet. No response. Those aren't dead leads. We follow up on them and turn them into real booked ${c.bookedNoun}.`;
+
+    document.getElementById('leakBody1').innerHTML =
+      `You're busy. Every job still gets done right — because that's the kind of company you run — and the customer looks at the extra work and says <mark>${c.stallPhrase}</mark>`;
+
+    document.getElementById('leakBody2').textContent =
+      `And that's usually the last anyone hears of it. The ${c.jobNounSingular} gets logged. Your ${c.systemNoun} files it away. The customer forgets. The work stays undone.`;
+
+    document.getElementById('gaugeLabel').textContent =
+      `Estimated unclaimed work sitting in your ${c.systemNoun}`;
+
+    document.getElementById('reassureTitle').textContent =
+      `Your ${c.systemNoun} already did the hard part.`;
+
+    document.getElementById('reassureBody').textContent =
+      `You earned these customers. You did the work, wrote the ${c.jobNounSingular}, made the call. All that's missing is the follow-up — and that part becomes our job.`;
+
+    document.getElementById('check2').innerHTML =
+      `Customers can reply, book, or opt out. <strong>Your ${c.teamNoun} change nothing.</strong>`;
+
+    document.getElementById('ledgerSub').textContent =
+      `Enter what's actually sitting in your ${c.systemNoun} right now.`;
+
+    document.getElementById('calcLabel1').textContent =
+      `Unanswered ${c.jobNoun} sitting in your ${c.systemNoun}`;
+
+    document.getElementById('stepOneBody').innerHTML =
+      `Works with what you already run — <strong>no rip-and-replace, no new logins for your ${c.teamNoun}.</strong> A simple weekly export works too. Setup takes about an hour of your time, once.`;
+
+    document.getElementById('stepTwoBody').innerHTML =
+      `A message goes out for every declined job, lapsed customer, and overdue follow-up — <strong>from your business name, in your voice.</strong> You approve the playbook once at kickoff.`;
+
+    document.getElementById('chatBubbleSample').textContent =
+      `Hi ${c.sampleName}, it's ${bizName || 'our team'} — back in ${c.sampleMonth} we quoted ${c.sampleService} and you asked us to hold off. Totally get it. Want us to take another look this week? No charge to check.`;
+
+    document.getElementById('faqQ3').textContent = `How much of my ${c.teamNoun}' time does this take?`;
+    document.getElementById('faqA3').textContent =
+      `About an hour, once, at setup. After that, messages go out on their own and replies land wherever you already handle them. Nobody has to learn a new system.`;
+
+    updateGauge();
+  }
+
   // ── Get the lead's slug out of the URL ──────────────────────────
-  // Works whichever way the custom domain is set up to route here:
-  //   https://yourdomain.com/w/ax7g2k   (clean path — needs a host rewrite rule)
-  //   https://yourdomain.com/?lead=ax7g2k  (query param — works on any static host, zero config)
   function getSlug() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('lead')) return params.get('lead');
@@ -369,7 +743,6 @@
       stage2: Number(data.video_stage2_end) || 0,
       stage3: Number(data.video_stage3_end) || 0
     };
-    // Show stage 1's image immediately so the page isn't blank before play.
     setStageImage(STAGE_IMAGES.screenshot);
 
     const bookingLink = document.getElementById('bookingLink');
@@ -381,6 +754,10 @@
 
     CONTACT_ID = data.contact_id || '';
     CAMPAIGN_ID = data.campaign_id || '';
+
+    // data.industry is optional today — falls back to 'general' copy until
+    // the backend sends a slug (see note on INDUSTRY_COPY above).
+    applyIndustryCopy(data.industry || 'general', data.business_name);
   }
 
   const video = document.getElementById('mainVideo');
@@ -399,8 +776,6 @@
     playHint.classList.toggle('expanded', expanded);
   }
 
-  // Drives the whole overlay sequence off actual playback time, so it
-  // stays in sync no matter where the viewer scrubs to.
   video.addEventListener('timeupdate', () => {
     const t = video.currentTime;
     if (t < STAGE_ENDS.stage1) {
@@ -418,11 +793,6 @@
     }
   });
 
-  // Whole video block is click-to-play/pause (not just the small bubble —
-  // that made it too easy to miss). Play-triangle hint shows while paused,
-  // hides once playing. play() returns a promise that rejects if pause()
-  // interrupts it — catching that prevents the harmless-but-noisy
-  // AbortError from showing up in the console on a fast double-click.
   videoBlock.addEventListener('click', () => {
     if (video.paused) {
       const p = video.play();
@@ -437,18 +807,11 @@
     document.body.innerHTML = '<div style="padding:60px 24px;text-align:center;color:#8C8C8C;font-family:Inter,sans-serif;">The video could not be loaded. Please check the video URL.</div>';
   });
 
-  // Spinner covers both the initial load (visible by default until the
-  // first frame is ready to play) and any mid-playback network stall.
   const spinner = document.getElementById('loadingSpinner');
   video.addEventListener('waiting', () => spinner.classList.remove('hidden'));
   video.addEventListener('canplay', () => spinner.classList.add('hidden'));
   video.addEventListener('playing', () => spinner.classList.add('hidden'));
 
-  // ── Video watch tracking ────────────────────────────────────────
-  // "play" fires once, the first time they actually press play (not on
-  // page load — autoplay isn't used here). "ended" fires once if they
-  // watch it all the way through. Both feed the same branch-trigger
-  // system as link clicks and the calculator, for intent tracks.
   let videoPlayTracked = false;
   video.addEventListener('play', () => {
     if (videoPlayTracked || !CONTACT_ID) return;
@@ -486,9 +849,27 @@
     const high = total * 0.20;
     document.getElementById('totalValue').textContent = formatCurrency(total);
     document.getElementById('recoverableValue').textContent = formatCurrency(low) + ' – ' + formatCurrency(high);
+    updateGauge();
 
     clearTimeout(window._calcSubmitTimer);
     window._calcSubmitTimer = setTimeout(() => submitCalc(quotes, jobValue, total, low, high), 800);
+  }
+
+  // The gauge in the "quiet leak" section mirrors the calculator's own
+  // output (using whatever the inputs currently are) rather than citing an
+  // outside statistic — so it never claims to be data it isn't.
+  function updateGauge() {
+    const quotes = parseFloat(document.getElementById('quotes').value) || 0;
+    const jobValue = parseFloat(document.getElementById('jobvalue').value) || 0;
+    const total = quotes * jobValue;
+    const low = total * 0.10;
+    const high = total * 0.20;
+    const gaugeValue = document.getElementById('gaugeValue');
+    const gaugeCaption = document.getElementById('gaugeCaption');
+    if (gaugeValue) gaugeValue.textContent = formatCurrency(low) + ' – ' + formatCurrency(high);
+    if (gaugeCaption) {
+      gaugeCaption.innerHTML = `Based on a starting estimate of ${quotes} unanswered quotes at ${formatCurrency(jobValue)} each — <a href="#calc">adjust it to your real numbers below</a>.`;
+    }
   }
 
   async function submitCalc(quotes, jobValue, total, low, high) {
@@ -504,6 +885,37 @@
       });
     } catch (e) { console.error('Could not save calculator submission', e); }
   }
+
+  // ── FAQ accordion ───────────────────────────────────────────────
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const answer = item.querySelector('.faq-a');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(other => {
+      if (other !== item) {
+        other.classList.remove('open');
+        other.querySelector('.faq-a').style.maxHeight = null;
+      }
+    });
+    if (isOpen) {
+      item.classList.remove('open');
+      answer.style.maxHeight = null;
+    } else {
+      item.classList.add('open');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+  }
+
+  // ── Scroll reveal ────────────────────────────────────────────────
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
   loadLead();
   calc();
