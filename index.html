@@ -92,6 +92,7 @@
     border-radius: 16px;
     overflow: hidden;
     margin-bottom: 48px;
+    cursor: pointer;
   }
   .face-bubble {
     position: absolute;
@@ -110,28 +111,33 @@
     background: #111;
     transition: all 0.5s ease;
   }
+  /* Big centered play button — independent of where the face bubble sits,
+     so it's obvious even when the bubble is tucked in a corner. Pure CSS:
+     ::before draws the dark circle, ::after draws the triangle on top. */
   .play-hint {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 22%;
-    aspect-ratio: 1/1;
-    min-width: 90px;
-    max-width: 180px;
-    border-radius: 50%;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     pointer-events: none;
-    background: rgba(0,0,0,0.25);
+    z-index: 3;
+  }
+  .play-hint::before {
+    content: '';
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.55);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
   }
   .play-hint::after {
     content: '';
+    position: absolute;
     width: 0; height: 0;
-    border-top: 12px solid transparent;
-    border-bottom: 12px solid transparent;
-    border-left: 18px solid rgba(255,255,255,0.95);
-    margin-left: 4px;
+    border-top: 14px solid transparent;
+    border-bottom: 14px solid transparent;
+    border-left: 20px solid rgba(255,255,255,0.95);
+    margin-left: 5px;
   }
   .play-hint.hidden { display: none; }
 
@@ -143,12 +149,6 @@
     border-radius: 0;
     border: none;
     box-shadow: none;
-  }
-  .play-hint.expanded {
-    bottom: 0; right: 0; top: 0; left: 0;
-    width: 100%; height: 100%;
-    min-width: 0; max-width: none;
-    border-radius: 0;
   }
 
   .recap {
@@ -398,14 +398,24 @@
     }
   });
 
-  // Face bubble is click-to-play/pause (no native controls — they don't
-  // fit a small circle). Play-triangle hint shows while paused, hides
-  // once playing.
-  video.addEventListener('click', () => {
-    if (video.paused) video.play(); else video.pause();
+  // Whole video block is click-to-play/pause (not just the small bubble —
+  // that made it too easy to miss). Play-triangle hint shows while paused,
+  // hides once playing. play() returns a promise that rejects if pause()
+  // interrupts it — catching that prevents the harmless-but-noisy
+  // AbortError from showing up in the console on a fast double-click.
+  videoBlock.addEventListener('click', () => {
+    if (video.paused) {
+      const p = video.play();
+      if (p && p.catch) p.catch(() => {});
+    } else {
+      video.pause();
+    }
   });
   video.addEventListener('play', () => playHint.classList.add('hidden'));
   video.addEventListener('pause', () => playHint.classList.remove('hidden'));
+  video.addEventListener('error', () => {
+    document.body.innerHTML = '<div style="padding:60px 24px;text-align:center;color:#8C8C8C;font-family:Inter,sans-serif;">The video could not be loaded. Please check the video URL.</div>';
+  });
 
   // ── Video watch tracking ────────────────────────────────────────
   // "play" fires once, the first time they actually press play (not on
