@@ -5,497 +5,199 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="pageTitle">A quick word</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0A0A0A;
-    --panel: #151515;
-    --panel-2: #1C1C1C;
-    --accent: #E8E8E8;
-    --accent-bright: #FFFFFF;
-    --cream: #F2F2F2;
-    --cream-dim: #8C8C8C;
-    --cream-dimmer: #5E5E5E;
-    --border: #2A2A2A;
-    --border-soft: #232323;
-    --texture: #FFFFFF;
-    --texture-opacity: 0.14;
-    --num-font: 'Space Grotesk', sans-serif;
-    --highlight-bg: rgba(255,255,255,0.10);
+    --bg: #08090C;
+    --bg-tint: #101219;
+    --bg-line: rgba(255,255,255,0.12);
+    --surface: #12141B;
+    --card-border: rgba(255,255,255,0.10);
+    --card-glow: rgba(255,255,255,0.14);
+    --ink: #F2F1EC;
+    --ink-dim: #A7ABBA;
+    --ink-dimmer: #6C6F7C;
+
+    --accent: #F2F1EC;
+    --accent-2: #C9CCD6;
+    --accent-deep: #2A2C33;
+    --btn-ink: #08090C;
+
+    --serif: 'Fraunces', serif;
+    --sans: 'Inter', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  ::selection { background: var(--accent); color: #fff; }
 
-  body {
-    background: var(--bg);
-    color: var(--cream);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-    position: relative;
-  }
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background-image: repeating-linear-gradient(135deg, var(--texture) 0px, var(--texture) 1px, transparent 1px, transparent 26px);
-    opacity: var(--texture-opacity);
-  }
+  .band { width: 100%; }
+  .band-paper { background: var(--bg); }
+  .band-tint { background: var(--bg-tint); }
+  .band-inner { max-width: 640px; margin: 0 auto; padding: 56px 24px; }
 
-  .wrap {
-    position: relative;
-    z-index: 1;
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 72px 24px 100px;
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: no-preference) {
+    .load-in { opacity: 0; animation: fadeUp 0.6s ease forwards; }
+    .load-in.d2 { animation-delay: 0.1s; }
+    .load-in.d3 { animation-delay: 0.2s; }
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.in-view { opacity: 1; transform: translateY(0); }
   }
+  @media (prefers-reduced-motion: reduce) { .load-in, .reveal { opacity: 1; transform: none; animation: none; transition: none; } }
 
   .eyebrow {
-    font-family: var(--num-font);
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 18px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; justify-content: center;
   }
-  .eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--accent); }
+  .eyebrow::before, .eyebrow::after { content: ''; width: 20px; height: 1px; background: var(--accent); }
 
   h1 {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: clamp(30px, 5vw, 44px);
-    line-height: 1.12;
-    letter-spacing: -0.01em;
-    margin-bottom: 16px;
+    font-family: var(--serif); font-weight: 600; font-size: clamp(28px, 5.5vw, 40px);
+    line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 14px; text-align: center;
   }
-  h1 .biz-name { color: var(--accent-bright); font-style: italic; font-weight: 500; }
+  h1 .biz-name { color: var(--accent); font-style: italic; font-weight: 500; }
 
-  .subhead {
-    font-size: 16px;
-    line-height: 1.6;
-    color: var(--cream-dim);
-    max-width: 480px;
-    margin-bottom: 40px;
-  }
+  .subhead { font-size: 15.5px; line-height: 1.55; color: var(--ink-dim); text-align: center; max-width: 440px; margin: 0 auto 36px; }
 
-  /* ── Video block: website screenshot as the persistent background,  ── */
-  /* ── presenter video as a small circular bubble in the corner       ── */
   .video-block {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16/9;
-    background: var(--panel) center/cover no-repeat;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    margin-bottom: 20px;
-    cursor: pointer;
+    position: relative; width: 100%; aspect-ratio: 16/9;
+    background: linear-gradient(150deg, var(--accent-deep), var(--accent-2));
+    border-radius: 16px; overflow: hidden; margin-bottom: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
   }
-  .face-bubble {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 22%;
-    aspect-ratio: 1/1;
-    min-width: 90px;
-    max-width: 180px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
-    border: 3px solid rgba(255,255,255,0.85);
-    box-shadow: 0 6px 24px rgba(0,0,0,0.4);
-    cursor: pointer;
-    background: #111;
-    transition: all 0.5s ease;
-  }
-  .play-hint {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    z-index: 3;
-  }
-  .play-hint::before {
-    content: '';
-    width: 64px; height: 64px;
-    border-radius: 50%;
-    background: rgba(0,0,0,0.55);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
-  }
-  .play-hint::after {
-    content: '';
-    position: absolute;
-    width: 0; height: 0;
-    border-top: 14px solid transparent;
-    border-bottom: 14px solid transparent;
-    border-left: 20px solid rgba(255,255,255,0.95);
-    margin-left: 5px;
-  }
-  .play-hint.hidden { display: none; }
-
-  .face-bubble.expanded {
-    bottom: 0; right: 0; top: 0; left: 0;
-    width: 100%; height: 100%;
-    min-width: 0; max-width: none;
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
-    object-fit: contain;
-    background: #000;
-  }
-
   .loading-spinner {
-    position: absolute;
-    top: 50%; left: 50%;
-    width: 40px; height: 40px;
-    margin: -20px 0 0 -20px;
-    border: 3px solid rgba(255,255,255,0.25);
-    border-top-color: rgba(255,255,255,0.9);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    z-index: 4;
-    pointer-events: none;
+    position: absolute; top: 50%; left: 50%; width: 34px; height: 34px; margin: -17px 0 0 -17px;
+    border: 3px solid rgba(255,255,255,0.25); border-top-color: rgba(255,255,255,0.9);
+    border-radius: 50%; animation: spin 0.8s linear infinite; z-index: 3; pointer-events: none;
   }
   .loading-spinner.hidden { display: none; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  .video-caption {
-    font-size: 13px;
-    color: var(--cream-dimmer);
-    text-align: center;
-    margin-bottom: 56px;
-  }
-
-  /* ── Shared section scaffolding ─────────────────────────────────── */
-  section { margin-bottom: 64px; }
-  .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s ease; }
-  .reveal.in-view { opacity: 1; transform: translateY(0); }
-  @media (prefers-reduced-motion: reduce) {
-    .reveal { opacity: 1; transform: none; transition: none; }
-  }
-
-  .recap {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--cream-dim);
-    border-left: 2px solid var(--accent);
-    padding-left: 18px;
-    margin-bottom: 64px;
-  }
-  .recap strong { color: var(--cream); font-weight: 600; }
-
-  /* ── Quiet-leak narrative block ──────────────────────────────────── */
-  .leak-eyebrow { color: var(--cream-dim); }
-  .leak-eyebrow::before { background: var(--cream-dim); }
-  h2.leak-headline {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: clamp(28px, 6vw, 40px);
-    line-height: 1.14;
-    letter-spacing: -0.01em;
-    margin-bottom: 22px;
-  }
-  h2.leak-headline em { color: var(--cream-dim); font-style: italic; font-weight: 500; }
-  .leak-body {
-    font-size: 16px;
-    line-height: 1.75;
-    color: var(--cream-dim);
-    margin-bottom: 14px;
-  }
-  .leak-body mark {
-    background: var(--highlight-bg);
-    color: var(--cream);
-    font-weight: 600;
-    padding: 0 4px;
-    border-radius: 3px;
-  }
-
-  .leak-gauge {
-    margin-top: 32px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 32px 28px;
-  }
-  .leak-gauge-label {
-    font-family: var(--num-font);
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--cream-dim);
-    margin-bottom: 10px;
-  }
-  .leak-gauge-value {
-    font-family: var(--num-font);
-    font-size: clamp(34px, 8vw, 48px);
-    font-weight: 600;
-    color: var(--accent-bright);
-    letter-spacing: -0.02em;
-    margin-bottom: 8px;
-  }
-  .leak-gauge-caption { font-size: 13px; color: var(--cream-dimmer); line-height: 1.6; }
-  .leak-gauge-caption a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--border); }
-
-  /* ── Reassurance / "your system already did the work" ────────────── */
-  .reassure-title {
-    font-family: 'Fraunces', serif;
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: 14px;
-    max-width: 460px;
-  }
-  .reassure-body { font-size: 15px; line-height: 1.7; color: var(--cream-dim); margin-bottom: 26px; max-width: 480px; }
-  .check-list { display: flex; flex-direction: column; gap: 14px; }
-  .check-item { display: flex; gap: 12px; align-items: flex-start; }
-  .check-icon {
-    flex-shrink: 0;
-    width: 20px; height: 20px;
-    border-radius: 5px;
-    background: var(--panel-2);
-    border: 1px solid var(--border);
+  .play-hint {
+    position: relative; z-index: 2;
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.4);
     display: flex; align-items: center; justify-content: center;
-    margin-top: 2px;
+    transition: transform 0.2s ease, background 0.2s ease;
   }
-  .check-icon::after { content: '✓'; font-size: 11px; color: var(--accent-bright); }
-  .check-text { font-size: 14.5px; line-height: 1.6; color: var(--cream-dim); }
-  .check-text strong { color: var(--cream); font-weight: 600; }
+  .video-block:hover .play-hint { transform: scale(1.06); background: rgba(255,255,255,0.24); }
+  .play-hint::after {
+    content: ''; width: 0; height: 0;
+    border-top: 15px solid transparent; border-bottom: 15px solid transparent;
+    border-left: 22px solid rgba(255,255,255,0.97); margin-left: 6px;
+  }
+  .video-caption { font-family: var(--mono); font-size: 11.5px; color: var(--ink-dimmer); text-align: center; margin-bottom: 28px; }
 
-  /* ── Calculator ───────────────────────────────────────────────── */
-  .ledger-section { text-align: center; }
-  .ledger-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600; margin-bottom: 6px; }
-  .ledger-sub { font-size: 14px; color: var(--cream-dim); margin-bottom: 32px; }
+  /* ── CTA — flat, no shadow, no gimmicks. This is the entire point of the page. ── */
+  .cta-wrap { text-align: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    background: var(--accent); color: var(--btn-ink);
+    font-family: var(--sans); font-size: 15px; font-weight: 600;
+    padding: 15px 30px; border-radius: 10px; border: none; cursor: pointer;
+    text-decoration: none; white-space: nowrap;
+    transition: background 0.2s ease;
+  }
+  .btn:hover { background: var(--accent-2); }
+  .cta-sub { margin-top: 14px; font-size: 13px; color: var(--ink-dim); }
+  .cta-sub a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent); }
+
+  .section-title { font-family: var(--serif); font-size: 24px; font-weight: 500; text-align: center; margin-bottom: 8px; }
+  .section-sub { font-size: 14px; color: var(--ink-dim); text-align: center; margin-bottom: 32px; }
 
   .calc-box {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 40px 36px;
-    max-width: 460px;
-    margin: 0 auto;
-    text-align: left;
+    background: var(--surface); border: 1px solid var(--card-border); border-radius: 18px;
+    padding: 34px 30px; max-width: 440px; margin: 0 auto; text-align: left;
+    box-shadow: 0 24px 60px -24px rgba(0,0,0,0.65), 0 0 50px -8px var(--card-glow);
   }
-
-  .flow-stat {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 22px 0;
-    border-bottom: 1px solid var(--border);
-  }
+  .flow-stat { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; padding: 20px 0; border-bottom: 1px solid var(--card-border); }
   .flow-stat:first-of-type { padding-top: 0; }
-  .flow-stat-label { font-size: 15px; color: var(--cream-dim); line-height: 1.5; max-width: 300px; }
-
+  .flow-stat-label { font-size: 14.5px; color: var(--ink-dim); line-height: 1.5; max-width: 280px; }
   .stepper { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
   .stepper button {
-    width: 30px; height: 30px; background: none; border: none;
-    color: var(--cream-dim); font-size: 17px; cursor: pointer;
-    font-family: var(--num-font); border-radius: 999px;
-    transition: color 0.15s ease, background 0.15s ease;
+    width: 28px; height: 28px; background: none; border: none; color: var(--ink-dim); font-size: 16px; cursor: pointer;
+    font-family: var(--mono); border-radius: 999px; transition: color 0.15s ease, background 0.15s ease;
   }
-  .stepper button:hover { color: var(--accent); background: var(--panel-2); }
-  .stepper .dollar-sign { color: var(--accent); font-family: var(--num-font); font-size: 26px; font-weight: 600; margin-right: 2px; }
+  .stepper button:hover { color: var(--accent); background: var(--bg-tint); }
+  .stepper .dollar-sign { color: var(--accent); font-family: var(--mono); font-size: 22px; font-weight: 700; margin-right: 2px; }
   .stepper input {
-    width: 84px; text-align: right; background: none; border: none;
-    color: var(--accent); font-family: var(--num-font); font-size: 26px;
-    font-weight: 600; letter-spacing: -0.01em; -moz-appearance: textfield;
+    width: 78px; text-align: right; background: none; border: none; color: var(--accent);
+    font-family: var(--mono); font-size: 22px; font-weight: 700; -moz-appearance: textfield;
   }
   .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   .stepper input:focus { outline: none; }
-
-  .flow-result { padding-top: 40px; text-align: left; }
-  .flow-result-label { font-size: 13px; color: var(--cream-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+  .flow-result { padding-top: 30px; text-align: left; }
+  .reveal-btn {
+    width: 100%; background: var(--accent); color: var(--btn-ink);
+    font-family: var(--sans); font-size: 14.5px; font-weight: 600;
+    padding: 14px 20px; border-radius: 10px; border: none; cursor: pointer;
+    margin-top: 30px; transition: background 0.2s ease;
+  }
+  .reveal-btn:hover { background: var(--accent-2); }
+  .reveal-panel { max-height: 0; overflow: hidden; transition: max-height 0.45s cubic-bezier(.16,.84,.44,1); }
+  .reveal-panel.open { max-height: 420px; }
+  .flow-result-label { font-family: var(--mono); font-size: 11px; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
   .flow-result-value {
-    font-family: var(--num-font); font-size: clamp(36px, 7vw, 56px); font-weight: 600;
-    color: var(--accent-bright); letter-spacing: -0.02em; line-height: 1; margin-bottom: 14px;
+    font-family: var(--mono); font-size: clamp(30px, 6vw, 42px); font-weight: 700; color: var(--accent);
+    letter-spacing: -0.02em; line-height: 1; margin-bottom: 12px; font-variant-numeric: tabular-nums;
   }
-  .flow-result-caption { font-size: 13px; color: var(--cream-dim); line-height: 1.6; max-width: 420px; }
-  .flow-result-caption span { color: var(--cream); font-weight: 500; }
+  .flow-result-caption { font-size: 12.5px; color: var(--ink-dim); line-height: 1.6; }
+  .flow-result-caption span { color: var(--ink); font-weight: 600; font-family: var(--mono); }
+  @media (max-width: 460px) { .flow-stat { flex-direction: column; align-items: flex-start; gap: 12px; } .stepper input { text-align: left; } }
 
-  @media (max-width: 480px) {
-    .flow-stat { flex-direction: column; align-items: flex-start; gap: 14px; }
-    .stepper input { text-align: left; }
-  }
-
-  /* ── How it works / steps ─────────────────────────────────────── */
-  .steps-eyebrow { color: var(--cream-dim); }
-  .steps-eyebrow::before { background: var(--cream-dim); }
-  .step-block {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 30px 28px;
-    margin-bottom: 16px;
-  }
-  .step-tag {
-    font-family: var(--num-font);
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--cream-dimmer);
-    margin-bottom: 10px;
-  }
-  .step-title { font-family: 'Fraunces', serif; font-size: 21px; font-weight: 600; margin-bottom: 10px; }
-  .step-body { font-size: 14.5px; line-height: 1.7; color: var(--cream-dim); }
-  .step-body strong { color: var(--cream); font-weight: 600; }
-
-  .chat-mock {
-    margin-top: 18px;
-    background: var(--bg);
-    border: 1px solid var(--border-soft);
-    border-radius: 14px;
-    padding: 18px;
-    display: flex;
-    justify-content: flex-end;
-  }
-  .chat-bubble {
-    background: var(--panel-2);
-    border: 1px solid var(--border);
-    color: var(--cream);
-    font-size: 13.5px;
-    line-height: 1.55;
-    padding: 12px 15px;
-    border-radius: 14px 14px 3px 14px;
-    max-width: 88%;
-  }
-
-  /* ── FAQ accordion ────────────────────────────────────────────── */
-  .faq-eyebrow { color: var(--cream-dim); }
-  .faq-eyebrow::before { background: var(--cream-dim); }
-  .faq-item {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    margin-bottom: 12px;
-    overflow: hidden;
-  }
+  .faq-item { border-top: 1px solid var(--bg-line); }
+  .faq-item:last-child { border-bottom: 1px solid var(--bg-line); }
   .faq-q {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    background: none;
-    border: none;
-    text-align: left;
-    padding: 20px 22px;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--cream);
+    width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    background: none; border: none; text-align: left; padding: 18px 2px; cursor: pointer;
+    font-family: var(--sans); font-size: 14.5px; font-weight: 500; color: var(--ink);
   }
-  .faq-plus {
-    flex-shrink: 0;
-    width: 22px; height: 22px;
-    position: relative;
-  }
-  .faq-plus::before, .faq-plus::after {
-    content: '';
-    position: absolute;
-    background: var(--accent);
-    transition: transform 0.25s ease;
-  }
+  .faq-plus { flex-shrink: 0; width: 20px; height: 20px; position: relative; }
+  .faq-plus::before, .faq-plus::after { content: ''; position: absolute; background: var(--accent); transition: transform 0.25s ease; }
   .faq-plus::before { top: 50%; left: 0; width: 100%; height: 1.5px; margin-top: -0.75px; }
   .faq-plus::after { left: 50%; top: 0; height: 100%; width: 1.5px; margin-left: -0.75px; }
   .faq-item.open .faq-plus::after { transform: rotate(90deg); opacity: 0; }
-  .faq-a {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-  }
-  .faq-a-inner {
-    padding: 0 22px 20px;
-    font-size: 14px;
-    line-height: 1.7;
-    color: var(--cream-dim);
-  }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+  .faq-a-inner { padding: 0 2px 18px; font-size: 13.5px; line-height: 1.65; color: var(--ink-dim); }
 
-  /* ── CTA ─────────────────────────────────────────────────────── */
-  .cta-block { text-align: center; }
-  .cta-block .ledger-title { margin-bottom: 10px; }
-  .cta-block .ledger-sub { margin-bottom: 30px; }
-  .cta-btn {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: var(--accent-bright); color: var(--bg);
-    font-family: 'Inter', sans-serif; font-weight: 600; font-size: 15px;
-    padding: 16px 32px; border-radius: 999px; border: none; cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease; text-decoration: none;
-  }
-  .cta-btn:hover { transform: translateY(-1px); }
-  .cta-sub { margin-top: 16px; font-size: 13px; color: var(--cream-dim); }
-  .cta-sub a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent); }
+  footer { text-align: center; font-family: var(--mono); font-size: 11px; color: var(--ink-dimmer); padding: 40px 24px; }
 
-  footer {
-    text-align: center;
-    font-size: 12px;
-    color: var(--cream-dimmer);
-    padding-top: 20px;
-    border-top: 1px solid var(--border-soft);
-  }
-
-  @media (max-width: 520px) { .wrap { padding: 60px 18px 80px; } }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 </style>
 </head>
 <body>
 
-  <div class="wrap">
+  <div class="band band-paper">
+    <div class="band-inner">
+      <div class="eyebrow load-in">Prepared for <span id="bizNameEyebrow">you</span></div>
+      <h1 class="load-in d2">A quick word for <span class="biz-name" id="bizNameHeadline">you</span></h1>
+      <p class="subhead load-in d3">Two minutes on what we built for a company just like yours.</p>
 
-    <div class="eyebrow">Prepared for <span id="bizNameEyebrow">you</span></div>
-    <h1>A quick word for <span class="biz-name" id="bizNameHeadline">you</span></h1>
-    <p class="subhead" id="subheadText">Instead of another email you'll never read — a two minute video on what we built for a company just like yours.</p>
+      <div class="video-block load-in d3" id="videoBlock">
+        <video id="mainVideo" playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">
+          <source id="mainVideoSource" src="" type="video/mp4">
+        </video>
+        <div class="play-hint" id="playHint"></div>
+        <div class="loading-spinner hidden" id="loadingSpinner"></div>
+      </div>
 
-    <div class="video-block" id="videoBlock">
-      <video id="mainVideo" class="face-bubble" playsinline preload="auto">
-        <source id="mainVideoSource" src="" type="video/mp4">
-      </video>
-      <div id="playHint" class="play-hint"></div>
-      <div id="loadingSpinner" class="loading-spinner"></div>
+      <div class="cta-wrap load-in d3">
+        <a href="#" class="btn" id="bookingLinkHero" onclick="trackBooking('hero')">Book a time →</a>
+        <div class="cta-sub">Or <a href="#" id="replyLink">reply to the email</a> and we'll set up a time.</div>
+      </div>
     </div>
-    <p class="video-caption">Tap the video to play — two minutes, no sound required.</p>
+  </div>
 
-    <p class="recap" id="recapText"><strong>Most companies in your line of work</strong> send out quotes that just go quiet. No response. Those aren't dead leads. We follow up on them and turn them into real booked jobs.</p>
-
-    <!-- ── Quiet leak narrative ─────────────────────────────────── -->
-    <section class="reveal">
-      <div class="eyebrow leak-eyebrow">The quiet leak</div>
-      <h2 class="leak-headline">You're not losing customers.<br><em>You're losing follow-up.</em></h2>
-      <p class="leak-body" id="leakBody1">You're busy. Every job still gets done right — because that's the kind of company you run — and the customer looks at the extra work and says <mark>"maybe next time."</mark></p>
-      <p class="leak-body" id="leakBody2">And that's usually the last anyone hears of it. The job gets logged. The system files it in a report nobody opens. The customer forgets. The work stays undone.</p>
-      <div class="leak-gauge">
-        <div class="leak-gauge-label" id="gaugeLabel">Estimated unclaimed work sitting in your pipeline</div>
-        <div class="leak-gauge-value" id="gaugeValue">$5,000 – $10,000</div>
-        <div class="leak-gauge-caption" id="gaugeCaption">Based on a starting estimate of 20 unanswered quotes at $500 each — <a href="#calc">adjust it to your real numbers below</a>.</div>
-      </div>
-    </section>
-
-    <!-- ── Reassurance ──────────────────────────────────────────── -->
-    <section class="reveal">
-      <h2 class="reassure-title" id="reassureTitle">Your job history already did the hard part.</h2>
-      <p class="reassure-body" id="reassureBody">You earned these customers. You did the work, wrote the quote, made the call. All that's missing is the follow-up — and that part becomes our job.</p>
-      <div class="check-list">
-        <div class="check-item"><span class="check-icon"></span><span class="check-text" id="check1"><strong>No discounts on your labor</strong> — ever. A well-timed follow-up does the work.</span></div>
-        <div class="check-item"><span class="check-icon"></span><span class="check-text" id="check2">Customers can reply, book, or opt out. <strong>Your team changes nothing.</strong></span></div>
-        <div class="check-item"><span class="check-icon"></span><span class="check-text">Every booked job gets <strong>attributed to the message</strong> that recovered it.</span></div>
-      </div>
-    </section>
-
-    <!-- ── Calculator ───────────────────────────────────────────── -->
-    <section class="ledger-section reveal" id="calc">
-      <div class="ledger-title">Check your own number</div>
-      <div class="ledger-sub" id="ledgerSub">Enter what's actually sitting in your pipeline right now.</div>
+  <div class="band band-tint">
+    <div class="band-inner reveal">
+      <div class="section-title">Check your own number</div>
+      <div class="section-sub">What's actually sitting in your job board right now.</div>
 
       <div class="calc-box">
         <div class="flow-stat">
-          <div class="flow-stat-label" id="calcLabel1">Unanswered quotes sitting in your pipeline</div>
+          <div class="flow-stat-label">Unanswered proposals sitting in your job board</div>
           <div class="stepper">
             <button onclick="step('quotes', -1)">−</button>
             <input type="number" id="quotes" value="20" oninput="calc()">
@@ -512,202 +214,94 @@
           </div>
         </div>
         <div class="flow-result">
-          <div class="flow-result-label">Estimated recoverable</div>
-          <div class="flow-result-value" id="recoverableValue">$1,000 – $2,000</div>
-          <div class="flow-result-caption">Out of <span id="totalValue">$10,000</span> in total unanswered quotes — money tied to leads you've already paid to generate, not new ad spend.</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── How it works ─────────────────────────────────────────── -->
-    <section class="reveal">
-      <div class="eyebrow steps-eyebrow">How it works</div>
-      <h2 class="leak-headline" style="font-size:clamp(24px,5vw,32px); margin-bottom:24px;">Live in about a week. Nothing changes at the counter.</h2>
-
-      <div class="step-block">
-        <div class="step-tag">Step one</div>
-        <div class="step-title">Plug into what you already use</div>
-        <div class="step-body" id="stepOneBody">Works with what you already run — <strong>no rip-and-replace, no new logins for your team.</strong> A simple weekly export works too. Setup takes about an hour of your time, once.</div>
-      </div>
-
-      <div class="step-block">
-        <div class="step-tag">Step two</div>
-        <div class="step-title">We write and send the follow-up</div>
-        <div class="step-body" id="stepTwoBody">A message goes out for every declined job, lapsed customer, and overdue service — <strong>from your business name, in your voice.</strong> You approve the playbook once at kickoff.</div>
-        <div class="chat-mock">
-          <div class="chat-bubble" id="chatBubbleSample">Hi Mike, it's John — back in March we quoted the work and you asked us to hold off. Totally get it. Want us to take another look this week? No charge to check.</div>
+          <button type="button" class="reveal-btn" id="revealBtn" onclick="revealResult()">See what that adds up to →</button>
+          <div class="reveal-panel" id="revealPanel">
+            <div style="padding-top:26px;">
+              <div class="flow-result-label">Sitting in your job board right now</div>
+              <div class="flow-result-value" id="totalValueBig">$10,000</div>
+              <div class="flow-result-label" style="margin-top:22px;">We'd expect to recover</div>
+              <div class="flow-result-value" id="recoverableValue">$1,000–$2,000</div>
+              <div class="flow-result-caption">Often more once we're fully dialed in.</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="step-block">
-        <div class="step-tag">Step three</div>
-        <div class="step-title">Every recovered dollar gets counted</div>
-        <div class="step-body">Every booked job lands on one dashboard with a running total. Not a vague "engagement" score — a dollar figure, tied to the exact message that brought it back.</div>
+      <div class="cta-wrap" style="margin-top:32px;">
+        <a href="#" class="btn" id="bookingLinkCalc" onclick="trackBooking('calculator')">Book a time →</a>
       </div>
-    </section>
-
-    <!-- ── FAQ ──────────────────────────────────────────────────── -->
-    <section class="reveal">
-      <div class="eyebrow faq-eyebrow">Fair questions</div>
-      <h2 class="leak-headline" style="font-size:clamp(24px,5vw,32px); margin-bottom:24px;">What every owner asks us.</h2>
-
-      <div id="faqList">
-        <div class="faq-item">
-          <button class="faq-q" onclick="toggleFaq(this)"><span>Is this going to annoy my customers?</span><span class="faq-plus"></span></button>
-          <div class="faq-a"><div class="faq-a-inner" id="faqA1">No. Every message references that specific customer's real job and history, reads like a person wrote it, and gives a clear, one-tap way to opt out. We're not blasting a list — we're following up the way your best person would if they had unlimited time in the day.</div></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" onclick="toggleFaq(this)"><span>We already have a CRM or scheduling tool. Isn't this the same thing?</span><span class="faq-plus"></span></button>
-          <div class="faq-a"><div class="faq-a-inner">Most of those tools store the data. They don't write the follow-up message and send it on a schedule tied to what actually happened on that job. We sit on top of what you already have — we don't replace it.</div></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" onclick="toggleFaq(this)"><span id="faqQ3">How much of my team's time does this take?</span><span class="faq-plus"></span></button>
-          <div class="faq-a"><div class="faq-a-inner" id="faqA3">About an hour, once, at setup. After that, messages go out on their own and replies land wherever you already handle them. Nobody has to learn a new system.</div></div>
-        </div>
-        <div class="faq-item">
-          <button class="faq-q" onclick="toggleFaq(this)"><span>What does setup actually look like?</span><span class="faq-plus"></span></button>
-          <div class="faq-a"><div class="faq-a-inner">A short call to connect your system (or set up a weekly export), one round of approving the message playbook in your voice, and you're live. Most shops are running within a week.</div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── CTA ──────────────────────────────────────────────────── -->
-    <div class="cta-block reveal">
-      <div class="ledger-title">See what's sitting in yours</div>
-      <div class="ledger-sub">15-minute call. We'll show you your actual numbers — no pitch if they're not there.</div>
-      <a href="#" id="bookingLink" class="cta-btn">Book a 15-minute call →</a>
-      <div class="cta-sub">Or just <a href="#" id="replyLink">reply to the email</a> and we'll set up a time.</div>
     </div>
-
-    <footer id="footerNote">Every number on this page is either from your own inputs or a plainly-labeled estimate — nothing here is dressed up as someone else's result.</footer>
-
   </div>
+
+  <div class="band band-paper">
+    <div class="band-inner reveal">
+      <div class="section-title">Fair questions</div>
+      <div class="section-sub">What every owner asks us.</div>
+
+      <div>
+        <div class="faq-item" data-q="spam">
+          <button class="faq-q" onclick="toggleFaq(this)"><span>Will my customers feel spammed?</span><span class="faq-plus"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">No. Every message references that specific customer's real job and history, reads like a person wrote it, and gives a one-tap way out.</div></div>
+        </div>
+        <div class="faq-item" data-q="crm">
+          <button class="faq-q" onclick="toggleFaq(this)"><span>Does this replace the CRM we already pay for?</span><span class="faq-plus"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">No, and it doesn't need to. We sit on top of what you already run. You don't switch anything.</div></div>
+        </div>
+        <div class="faq-item" data-q="time">
+          <button class="faq-q" onclick="toggleFaq(this)"><span>How much of my time does this take?</span><span class="faq-plus"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">About an hour, once, to approve the playbook. After that you're live within about a week.</div></div>
+        </div>
+        <div class="faq-item" data-q="optout">
+          <button class="faq-q" onclick="toggleFaq(this)"><span>What happens when someone opts out?</span><span class="faq-plus"></span></button>
+          <div class="faq-a"><div class="faq-a-inner">One tap and they're removed from every future message, permanently.</div></div>
+        </div>
+      </div>
+
+      <div class="cta-wrap" style="margin-top:36px;">
+        <a href="#" class="btn" id="bookingLinkFaq" onclick="trackBooking('faq')">Book a time →</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>Every number on this page is either from your own inputs or a plainly-labeled estimate.</footer>
 
 <script>
   // ── Backend API base ─────────────────────────────────────────
-  // This page is hosted on the custom domain, separate from the Railway
-  // backend/Supabase, so it can't be server-templated anymore — it pulls
-  // this contact's data from Railway over the network instead, on load.
-  // UPDATE this if the Railway URL ever changes.
+  // Same pattern as the existing production page: hosted separately from
+  // the Railway/Render backend, so lead data is pulled client-side on load.
   const API_BASE = "https://gfcjvjckxz.onrender.com";
 
   let CONTACT_ID = '';
   let CAMPAIGN_ID = '';
 
-  // ── Video stage timeline ─────────────────────────────────────────
-  // Stage 1 (0 → stage1_end): personalized website screenshot behind the bubble
-  // Stage 2 (stage1_end → stage2_end): shared "how it works" image
-  // Stage 3 (stage2_end → stage3_end): shared "system" image
-  // Stage 4 (stage3_end → end): no image — presenter fills the whole frame
-  let STAGE_IMAGES = { screenshot: '', how_it_works: '', system: '' };
-  let STAGE_ENDS = { stage1: 0, stage2: 0, stage3: 0 };
-
-  // ── Industry copy system ─────────────────────────────────────────
-  // Keyed by a slug this page expects on the lead record as `data.industry`.
-  // NOTE: the current backend response (see loadLead below) doesn't send this
-  // field yet — this reads data.industry if present and falls back to
-  // 'general' otherwise. Adding the field on the backend is a separate change
-  // to discuss, not something this file does on its own.
-  const INDUSTRY_COPY = {
-    auto: {
-      label: 'auto repair', jobNoun: 'quotes', jobNounSingular: 'quote',
-      systemNoun: 'shop system', stallPhrase: '"maybe next time."',
-      teamNoun: 'advisors', bookedNoun: 'jobs',
-      sampleName: 'Mike', sampleMonth: 'March', sampleService: 'the rear brake service'
-    },
-    tree: {
-      label: 'tree service', jobNoun: 'estimates', jobNounSingular: 'estimate',
-      systemNoun: 'job board', stallPhrase: '"call us in the fall."',
-      teamNoun: 'crews', bookedNoun: 'jobs',
-      sampleName: 'Dana', sampleMonth: 'June', sampleService: 'the dead oak removal'
-    },
-    irrigation: {
-      label: 'irrigation & sprinkler', jobNoun: 'estimates', jobNounSingular: 'estimate',
-      systemNoun: 'job board', stallPhrase: '"we\u2019ll wait till spring."',
-      teamNoun: 'techs', bookedNoun: 'jobs',
-      sampleName: 'Carla', sampleMonth: 'April', sampleService: 'the backflow repair'
-    },
-    lawn: {
-      label: 'lawn & landscaping', jobNoun: 'proposals', jobNounSingular: 'proposal',
-      systemNoun: 'job board', stallPhrase: '"let us think on it."',
-      teamNoun: 'crews', bookedNoun: 'jobs',
-      sampleName: 'Reggie', sampleMonth: 'September', sampleService: 'the fall cleanup'
-    },
-    hvac: {
-      label: 'HVAC', jobNoun: 'quotes', jobNounSingular: 'quote',
-      systemNoun: 'dispatch board', stallPhrase: '"we\u2019ll ride it out this season."',
-      teamNoun: 'techs', bookedNoun: 'jobs',
-      sampleName: 'Priya', sampleMonth: 'July', sampleService: 'the capacitor replacement'
-    },
-    roofing: {
-      label: 'roofing', jobNoun: 'estimates', jobNounSingular: 'estimate',
-      systemNoun: 'job board', stallPhrase: '"we\u2019ll deal with it later."',
-      teamNoun: 'crews', bookedNoun: 'jobs',
-      sampleName: 'Tom', sampleMonth: 'May', sampleService: 'the flashing repair'
-    },
-    general: {
-      label: 'service', jobNoun: 'quotes', jobNounSingular: 'quote',
-      systemNoun: 'job board', stallPhrase: '"maybe next time."',
-      teamNoun: 'team', bookedNoun: 'jobs',
-      sampleName: 'Alex', sampleMonth: 'last month', sampleService: 'the recommended work'
-    }
-  };
-
-  function applyIndustryCopy(industrySlug, bizName) {
-    const c = INDUSTRY_COPY[industrySlug] || INDUSTRY_COPY.general;
-
-    document.getElementById('subheadText').textContent =
-      `Instead of another email you'll never read — a two minute video on what we built for a ${c.label} company just like yours.`;
-
-    document.getElementById('recapText').innerHTML =
-      `<strong>Most ${c.label} companies</strong> send out ${c.jobNoun} that just go quiet. No response. Those aren't dead leads. We follow up on them and turn them into real booked ${c.bookedNoun}.`;
-
-    document.getElementById('leakBody1').innerHTML =
-      `You're busy. Every job still gets done right — because that's the kind of company you run — and the customer looks at the extra work and says <mark>${c.stallPhrase}</mark>`;
-
-    document.getElementById('leakBody2').textContent =
-      `And that's usually the last anyone hears of it. The ${c.jobNounSingular} gets logged. Your ${c.systemNoun} files it away. The customer forgets. The work stays undone.`;
-
-    document.getElementById('gaugeLabel').textContent =
-      `Estimated unclaimed work sitting in your ${c.systemNoun}`;
-
-    document.getElementById('reassureTitle').textContent =
-      `Your ${c.systemNoun} already did the hard part.`;
-
-    document.getElementById('reassureBody').textContent =
-      `You earned these customers. You did the work, wrote the ${c.jobNounSingular}, made the call. All that's missing is the follow-up — and that part becomes our job.`;
-
-    document.getElementById('check2').innerHTML =
-      `Customers can reply, book, or opt out. <strong>Your ${c.teamNoun} change nothing.</strong>`;
-
-    document.getElementById('ledgerSub').textContent =
-      `Enter what's actually sitting in your ${c.systemNoun} right now.`;
-
-    document.getElementById('calcLabel1').textContent =
-      `Unanswered ${c.jobNoun} sitting in your ${c.systemNoun}`;
-
-    document.getElementById('stepOneBody').innerHTML =
-      `Works with what you already run — <strong>no rip-and-replace, no new logins for your ${c.teamNoun}.</strong> A simple weekly export works too. Setup takes about an hour of your time, once.`;
-
-    document.getElementById('stepTwoBody').innerHTML =
-      `A message goes out for every declined job, lapsed customer, and overdue follow-up — <strong>from your business name, in your voice.</strong> You approve the playbook once at kickoff.`;
-
-    document.getElementById('chatBubbleSample').textContent =
-      `Hi ${c.sampleName}, it's ${bizName || 'our team'} — back in ${c.sampleMonth} we quoted ${c.sampleService} and you asked us to hold off. Totally get it. Want us to take another look this week? No charge to check.`;
-
-    document.getElementById('faqQ3').textContent = `How much of my ${c.teamNoun}' time does this take?`;
-    document.getElementById('faqA3').textContent =
-      `About an hour, once, at setup. After that, messages go out on their own and replies land wherever you already handle them. Nobody has to learn a new system.`;
-
-    updateGauge();
-  }
-
-  // ── Get the lead's slug out of the URL ──────────────────────────
   function getSlug() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('lead')) return params.get('lead');
     const parts = window.location.pathname.split('/').filter(Boolean);
     return parts.length ? parts[parts.length - 1] : '';
+  }
+
+  // ── Generic event tracker ────────────────────────────────────────
+  // Backend confirmed: real route is /api/track/event, added alongside the
+  // existing /api/track/video and /api/calc-submit (same email_events +
+  // checkBranchTrigger pattern those already use).
+  function track(event, meta) {
+    if (!CONTACT_ID) return;
+    try {
+      fetch(`${API_BASE}/api/track/event`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contact_id: CONTACT_ID, campaign_id: CAMPAIGN_ID,
+          event, meta: meta || {}, at: new Date().toISOString()
+        })
+      }).catch(() => {});
+    } catch (e) {}
+  }
+
+  function trackBooking(section) {
+    track('booking_clicked', { section });
+    // no preventDefault — the link still navigates to booking_url normally
   }
 
   async function loadLead() {
@@ -733,20 +327,9 @@
     document.getElementById('mainVideoSource').src = data.video_url || '';
     document.getElementById('mainVideo').load();
 
-    STAGE_IMAGES = {
-      screenshot: data.screenshot_url || '',
-      how_it_works: data.how_it_works_url || '',
-      system: data.system_url || ''
-    };
-    STAGE_ENDS = {
-      stage1: Number(data.video_stage1_end) || 0,
-      stage2: Number(data.video_stage2_end) || 0,
-      stage3: Number(data.video_stage3_end) || 0
-    };
-    setStageImage(STAGE_IMAGES.screenshot);
-
-    const bookingLink = document.getElementById('bookingLink');
-    bookingLink.href = data.booking_url || '#';
+    ['bookingLinkHero', 'bookingLinkCalc', 'bookingLinkFaq'].forEach(id => {
+      document.getElementById(id).href = data.booking_url || '#';
+    });
 
     const replyLink = document.getElementById('replyLink');
     const subject = encodeURIComponent(data.original_subject || 'our conversation');
@@ -754,44 +337,14 @@
 
     CONTACT_ID = data.contact_id || '';
     CAMPAIGN_ID = data.campaign_id || '';
-
-    // data.industry is optional today — falls back to 'general' copy until
-    // the backend sends a slug (see note on INDUSTRY_COPY above).
-    applyIndustryCopy(data.industry || 'general', data.business_name);
+    track('page_viewed');
   }
 
+  // ── Video playback + tracking ────────────────────────────────────
   const video = document.getElementById('mainVideo');
   const playHint = document.getElementById('playHint');
   const videoBlock = document.getElementById('videoBlock');
-
-  function setStageImage(url) {
-    videoBlock.style.backgroundImage = url ? `url('${url}')` : '';
-  }
-
-  let isExpanded = false;
-  function setExpanded(expanded) {
-    if (expanded === isExpanded) return;
-    isExpanded = expanded;
-    video.classList.toggle('expanded', expanded);
-    playHint.classList.toggle('expanded', expanded);
-  }
-
-  video.addEventListener('timeupdate', () => {
-    const t = video.currentTime;
-    if (t < STAGE_ENDS.stage1) {
-      setExpanded(false);
-      setStageImage(STAGE_IMAGES.screenshot);
-    } else if (t < STAGE_ENDS.stage2) {
-      setExpanded(false);
-      setStageImage(STAGE_IMAGES.how_it_works);
-    } else if (t < STAGE_ENDS.stage3) {
-      setExpanded(false);
-      setStageImage(STAGE_IMAGES.system);
-    } else {
-      setStageImage('');
-      setExpanded(true);
-    }
-  });
+  const spinner = document.getElementById('loadingSpinner');
 
   videoBlock.addEventListener('click', () => {
     if (video.paused) {
@@ -803,27 +356,46 @@
   });
   video.addEventListener('play', () => playHint.classList.add('hidden'));
   video.addEventListener('pause', () => playHint.classList.remove('hidden'));
-  video.addEventListener('error', () => {
-    document.body.innerHTML = '<div style="padding:60px 24px;text-align:center;color:#8C8C8C;font-family:Inter,sans-serif;">The video could not be loaded. Please check the video URL.</div>';
-  });
-
-  const spinner = document.getElementById('loadingSpinner');
   video.addEventListener('waiting', () => spinner.classList.remove('hidden'));
   video.addEventListener('canplay', () => spinner.classList.add('hidden'));
   video.addEventListener('playing', () => spinner.classList.add('hidden'));
+  video.addEventListener('error', () => {
+    document.body.innerHTML = '<div style="padding:60px 24px;text-align:center;color:#8C8C8C;font-family:Inter,sans-serif;">The video could not be loaded.</div>';
+  });
 
+  // "play" fires once on first actual play (autoplay isn't used, so this
+  // is a genuine engagement signal). Watch-time milestones (25/50/75/100%)
+  // each fire once. Total watched seconds is sent on unload via sendBeacon
+  // since a normal fetch can get cancelled when the tab closes.
   let videoPlayTracked = false;
+  const milestonesSent = { 25: false, 50: false, 75: false };
+  let watchedSeconds = 0;
+  let lastTick = null;
+
   video.addEventListener('play', () => {
-    if (videoPlayTracked || !CONTACT_ID) return;
+    lastTick = performance.now();
+    if (videoPlayTracked) return;
     videoPlayTracked = true;
-    fetch(`${API_BASE}/api/track/video`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contact_id: CONTACT_ID, campaign_id: CAMPAIGN_ID, event: 'play' })
-    }).catch(() => {});
+    track('video_play');
+  });
+  video.addEventListener('pause', () => { lastTick = null; });
+  video.addEventListener('timeupdate', () => {
+    if (lastTick != null) {
+      const now = performance.now();
+      watchedSeconds += (now - lastTick) / 1000;
+      lastTick = now;
+    }
+    if (!video.duration) return;
+    const pct = (video.currentTime / video.duration) * 100;
+    [25, 50, 75].forEach(m => {
+      if (!milestonesSent[m] && pct >= m) {
+        milestonesSent[m] = true;
+        track('video_progress', { percent: m });
+      }
+    });
   });
   video.addEventListener('ended', () => {
-    if (!CONTACT_ID) return;
+    track('video_progress', { percent: 100 });
     fetch(`${API_BASE}/api/track/video`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -831,7 +403,26 @@
     }).catch(() => {});
   });
 
+  function sendWatchTime() {
+    if (!CONTACT_ID || watchedSeconds < 1) return;
+    const payload = JSON.stringify({
+      contact_id: CONTACT_ID, campaign_id: CAMPAIGN_ID,
+      event: 'video_watch_time', meta: { seconds: Math.round(watchedSeconds) }, at: new Date().toISOString()
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(`${API_BASE}/api/track/event`, new Blob([payload], { type: 'application/json' }));
+    } else {
+      fetch(`${API_BASE}/api/track/event`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: payload, keepalive: true }).catch(() => {});
+    }
+  }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') sendWatchTime(); });
+  window.addEventListener('pagehide', sendWatchTime);
+
   // ── Calculator ───────────────────────────────────────────────
+  function formatCurrency(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
+  function formatRange(low, high) { return formatCurrency(low) + '–' + formatCurrency(high); }
+
+  let calcInteractionTracked = false;
   function step(id, dir) {
     const el = document.getElementById(id);
     let val = parseInt(el.value || 0) + dir;
@@ -839,80 +430,61 @@
     el.value = val;
     calc();
   }
-  function formatCurrency(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
-
   function calc() {
+    if (!calcInteractionTracked) { calcInteractionTracked = true; track('calc_interacted'); }
     const quotes = parseFloat(document.getElementById('quotes').value) || 0;
     const jobValue = parseFloat(document.getElementById('jobvalue').value) || 0;
     const total = quotes * jobValue;
     const low = total * 0.10;
     const high = total * 0.20;
-    document.getElementById('totalValue').textContent = formatCurrency(total);
-    document.getElementById('recoverableValue').textContent = formatCurrency(low) + ' – ' + formatCurrency(high);
-    updateGauge();
+    document.getElementById('totalValueBig').textContent = formatCurrency(total);
+    document.getElementById('recoverableValue').textContent = formatRange(low, high);
 
     clearTimeout(window._calcSubmitTimer);
     window._calcSubmitTimer = setTimeout(() => submitCalc(quotes, jobValue, total, low, high), 800);
   }
-
-  // The gauge in the "quiet leak" section mirrors the calculator's own
-  // output (using whatever the inputs currently are) rather than citing an
-  // outside statistic — so it never claims to be data it isn't.
-  function updateGauge() {
-    const quotes = parseFloat(document.getElementById('quotes').value) || 0;
-    const jobValue = parseFloat(document.getElementById('jobvalue').value) || 0;
-    const total = quotes * jobValue;
-    const low = total * 0.10;
-    const high = total * 0.20;
-    const gaugeValue = document.getElementById('gaugeValue');
-    const gaugeCaption = document.getElementById('gaugeCaption');
-    if (gaugeValue) gaugeValue.textContent = formatCurrency(low) + ' – ' + formatCurrency(high);
-    if (gaugeCaption) {
-      gaugeCaption.innerHTML = `Based on a starting estimate of ${quotes} unanswered quotes at ${formatCurrency(jobValue)} each — <a href="#calc">adjust it to your real numbers below</a>.`;
-    }
-  }
-
   async function submitCalc(quotes, jobValue, total, low, high) {
     if (!CONTACT_ID) return;
     try {
       await fetch(`${API_BASE}/api/calc-submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contact_id: CONTACT_ID, campaign_id: CAMPAIGN_ID,
-          quotes, job_value: jobValue, total, recoverable_low: low, recoverable_high: high
-        })
+        body: JSON.stringify({ contact_id: CONTACT_ID, campaign_id: CAMPAIGN_ID, quotes, job_value: jobValue, total, recoverable_low: low, recoverable_high: high })
       });
-    } catch (e) { console.error('Could not save calculator submission', e); }
+    } catch (e) {}
   }
 
-  // ── FAQ accordion ───────────────────────────────────────────────
+  let revealed = false;
+  function revealResult() {
+    if (revealed) return;
+    revealed = true;
+    document.getElementById('revealPanel').classList.add('open');
+    document.getElementById('revealBtn').style.display = 'none';
+    const total = (parseFloat(document.getElementById('quotes').value) || 0) * (parseFloat(document.getElementById('jobvalue').value) || 0);
+    track('calc_revealed', { total: Math.round(total) });
+  }
+
+  // ── FAQ ──────────────────────────────────────────────────────
+  const faqOpenedTracked = {};
   function toggleFaq(btn) {
     const item = btn.closest('.faq-item');
     const answer = item.querySelector('.faq-a');
     const isOpen = item.classList.contains('open');
     document.querySelectorAll('.faq-item.open').forEach(other => {
-      if (other !== item) {
-        other.classList.remove('open');
-        other.querySelector('.faq-a').style.maxHeight = null;
-      }
+      if (other !== item) { other.classList.remove('open'); other.querySelector('.faq-a').style.maxHeight = null; }
     });
     if (isOpen) {
-      item.classList.remove('open');
-      answer.style.maxHeight = null;
+      item.classList.remove('open'); answer.style.maxHeight = null;
     } else {
-      item.classList.add('open');
-      answer.style.maxHeight = answer.scrollHeight + 'px';
+      item.classList.add('open'); answer.style.maxHeight = answer.scrollHeight + 'px';
+      const q = item.dataset.q || 'unknown';
+      if (!faqOpenedTracked[q]) { faqOpenedTracked[q] = true; track('faq_opened', { question: q }); }
     }
   }
 
-  // ── Scroll reveal ────────────────────────────────────────────────
   const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in-view');
-        revealObserver.unobserve(entry.target);
-      }
+      if (entry.isIntersecting) { entry.target.classList.add('in-view'); revealObserver.unobserve(entry.target); }
     });
   }, { threshold: 0.15 });
   document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
