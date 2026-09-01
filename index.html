@@ -64,9 +64,35 @@
 
   .video-block {
     position: relative; width: 100%; aspect-ratio: 16/9;
-    background: linear-gradient(150deg, var(--accent-deep), var(--accent-2));
+    background: var(--surface) center/cover no-repeat;
     border-radius: 16px; overflow: hidden; margin-bottom: 20px; cursor: pointer;
+  }
+  .face-bubble {
+    position: absolute; bottom: 16px; right: 16px;
+    width: 24%; aspect-ratio: 1/1; min-width: 78px; max-width: 160px;
+    border-radius: 50%; object-fit: cover; display: block;
+    border: 3px solid rgba(255,255,255,0.85);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+    background: #111; transition: all 0.5s ease;
+  }
+  .face-bubble.expanded {
+    bottom: 0; right: 0; top: 0; left: 0; width: 100%; height: 100%;
+    min-width: 0; max-width: none; border-radius: 0; border: none; box-shadow: none;
+    object-fit: contain; background: #000;
+  }
+  .play-hint {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2;
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.4);
     display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .video-block:hover .play-hint { transform: translate(-50%, -50%) scale(1.06); background: rgba(255,255,255,0.24); }
+  .play-hint.hidden { opacity: 0; pointer-events: none; }
+  .play-hint::after {
+    content: ''; width: 0; height: 0;
+    border-top: 15px solid transparent; border-bottom: 15px solid transparent;
+    border-left: 22px solid rgba(255,255,255,0.97); margin-left: 6px;
   }
   .loading-spinner {
     position: absolute; top: 50%; left: 50%; width: 34px; height: 34px; margin: -17px 0 0 -17px;
@@ -75,19 +101,6 @@
   }
   .loading-spinner.hidden { display: none; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .play-hint {
-    position: relative; z-index: 2;
-    width: 80px; height: 80px; border-radius: 50%;
-    background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.4);
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.2s ease, background 0.2s ease;
-  }
-  .video-block:hover .play-hint { transform: scale(1.06); background: rgba(255,255,255,0.24); }
-  .play-hint::after {
-    content: ''; width: 0; height: 0;
-    border-top: 15px solid transparent; border-bottom: 15px solid transparent;
-    border-left: 22px solid rgba(255,255,255,0.97); margin-left: 6px;
-  }
   .video-caption { font-family: var(--mono); font-size: 11.5px; color: var(--ink-dimmer); text-align: center; margin-bottom: 28px; }
 
   /* ── CTA — flat, no shadow, no gimmicks. This is the entire point of the page. ── */
@@ -176,7 +189,7 @@
       <p class="subhead load-in d3">Two minutes on what we built for a company just like yours.</p>
 
       <div class="video-block load-in d3" id="videoBlock">
-        <video id="mainVideo" playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">
+        <video id="mainVideo" class="face-bubble" playsinline preload="auto">
           <source id="mainVideoSource" src="" type="video/mp4">
         </video>
         <div class="play-hint" id="playHint"></div>
@@ -327,6 +340,20 @@
     document.getElementById('mainVideoSource').src = data.video_url || '';
     document.getElementById('mainVideo').load();
 
+    // Stage timeline: screenshot → how-it-works → system → full-screen
+    // presenter, timed off video_stage{1,2,3}_end from the backend.
+    STAGE_IMAGES = {
+      screenshot: data.screenshot_url || '',
+      how_it_works: data.how_it_works_url || '',
+      system: data.system_url || ''
+    };
+    STAGE_ENDS = {
+      stage1: Number(data.video_stage1_end) || 0,
+      stage2: Number(data.video_stage2_end) || 0,
+      stage3: Number(data.video_stage3_end) || 0
+    };
+    setStageImage(STAGE_IMAGES.screenshot); // shown immediately, before play
+
     ['bookingLinkHero', 'bookingLinkCalc', 'bookingLinkFaq'].forEach(id => {
       document.getElementById(id).href = data.booking_url || '#';
     });
@@ -340,11 +367,33 @@
     track('page_viewed');
   }
 
+  // ── Video staging: screenshot/how-it-works/system background behind the
+  // face bubble, swapping at fixed timestamps, then full-screen at the end.
+  let STAGE_IMAGES = { screenshot: '', how_it_works: '', system: '' };
+  let STAGE_ENDS = { stage1: 0, stage2: 0, stage3: 0 };
+  function setStageImage(url) {
+    videoBlock.style.backgroundImage = url ? `url('${url}')` : '';
+  }
+  let isExpanded = false;
+  function setExpanded(expanded) {
+    if (expanded === isExpanded) return;
+    isExpanded = expanded;
+    video.classList.toggle('expanded', expanded);
+  }
+
   // ── Video playback + tracking ────────────────────────────────────
   const video = document.getElementById('mainVideo');
   const playHint = document.getElementById('playHint');
   const videoBlock = document.getElementById('videoBlock');
   const spinner = document.getElementById('loadingSpinner');
+
+  video.addEventListener('timeupdate', () => {
+    const t = video.currentTime;
+    if (t < STAGE_ENDS.stage1) { setExpanded(false); setStageImage(STAGE_IMAGES.screenshot); }
+    else if (t < STAGE_ENDS.stage2) { setExpanded(false); setStageImage(STAGE_IMAGES.how_it_works); }
+    else if (t < STAGE_ENDS.stage3) { setExpanded(false); setStageImage(STAGE_IMAGES.system); }
+    else { setStageImage(''); setExpanded(true); }
+  });
 
   videoBlock.addEventListener('click', () => {
     if (video.paused) {
